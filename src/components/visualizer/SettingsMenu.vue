@@ -1,57 +1,56 @@
 <script setup lang="ts">
-import Timer from "@/components/visualizer/Timer.vue"
-import { ref } from "vue"
+import Timer from "@/components/visualizer/Timer.vue";
+import { ref } from "vue";
 
-defineProps(["algorithms"])
+defineProps(["algorithms"]);
 
 const timer = ref();
-
 </script>
 
 <template>
-
     <div class="settingsMenu">
         <form>
             <ul>
                 <p>Select Algorithm:</p>
                 <li v-for="(algo, i) in algorithms">
-                    <input name="algorithms" :id="i.toString()" type="radio">
-                    <label name="algorithms" :for="i.toString()">{{ algo }}</label>
+                    <input name="algorithms" :id="i.toString()" type="radio" />
+                    <label name="algorithms" :for="i.toString()">{{
+                        algo
+                    }}</label>
                 </li>
             </ul>
 
             <ul>
                 <p>Select Speed:</p>
                 <li>
-                    <input name="algospeed" id="1" type="radio">
+                    <input name="algospeed" id="1" type="radio" />
                     <label for="1">1.0 X</label>
                 </li>
                 <li>
-                    <input name="algospeed" id="1" type="radio">
+                    <input name="algospeed" id="1" type="radio" />
                     <label for="1">0.5 X</label>
                 </li>
                 <li>
-                    <input name="algospeed" id="1" type="radio">
+                    <input name="algospeed" id="1" type="radio" />
                     <label for="1">step-by-step</label>
                 </li>
             </ul>
         </form>
 
-        <Timer ref="timer"/>
+        <Timer ref="timer" />
         <div class="buttonsGroup">
             <div class="menuButton" @click="timer.startTimer()">Start</div>
             <div class="menuButton" @click="timer.stopTimer()">Stop</div>
             <div class="menuButton" @click="timer.resetTimer()">Reset</div>
         </div>
     </div>
-
 </template>
 
 <style scoped>
-
 .settingsMenu {
     border: 1px solid;
-    width: 250px;
+    width: 12%;
+    min-width: 150px;
     padding: 5px;
 }
 
@@ -90,5 +89,4 @@ p {
     margin-bottom: 0;
     font-style: italic;
 }
-
 </style>
