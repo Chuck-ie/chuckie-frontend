@@ -13,7 +13,7 @@ const timer = ref();
             <ul>
                 <p>Select Algorithm:</p>
                 <li v-for="(algo, i) in algorithms">
-                    <input name="algorithms" :id="i.toString()" type="radio" />
+                    <input name="algorithms" :id="i.toString()" type="radio" :checked="i == 0 ? true : false"/>
                     <label name="algorithms" :for="i.toString()">{{
                         algo
                     }}</label>
@@ -23,7 +23,7 @@ const timer = ref();
             <ul>
                 <p>Select Speed:</p>
                 <li>
-                    <input name="algospeed" id="1" type="radio" />
+                    <input name="algospeed" id="1" type="radio" checked/>
                     <label for="1">1.0 X</label>
                 </li>
                 <li>
@@ -35,6 +35,10 @@ const timer = ref();
                     <label for="1">step-by-step</label>
                 </li>
             </ul>
+        </form>
+
+        <form>
+            
         </form>
 
         <Timer ref="timer" />
