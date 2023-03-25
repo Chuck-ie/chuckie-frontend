@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { Cell, SettingsForm} from "@/constants/interfaces";
 import { aStar, dijkstra } from '@/constants/PathingAlgos';
-import { getStartCell } from '@/constants/PathingHelpers';
+import { colorizePath, getStartCell } from '@/constants/PathingHelpers';
 
 defineExpose({startVisualizer, setGamesize});
 window.addEventListener("resize", () => setGamesize());
@@ -30,10 +30,12 @@ function setGamesize(): void {
                     row: i,
                     col: j
                 },
-                delay: 0,
+                delayVisited: 0,
+                delayPath: 0,
                 isStart: false,
                 isGoal: false,
                 isObstacle: false,
+                isPath: false,
                 visited: false,
                 distance: Infinity,
                 predecessor: undefined
@@ -100,14 +102,15 @@ function startVisualizer(form:SettingsForm): void {
     switch(form.algorithm) {
         case("dijkstra"):
             [result, goalCell] = dijkstra(gameGrid.value, startCell);
-            console.log(result);
-            console.log(goalCell);
-            console.log("dijkstra");
             break;
         case("astar"):
             result = aStar(gameGrid.value, startCell);
             console.log("astar");
             break;
+    }
+    
+    if (goalCell!.predecessor !== undefined) {
+        colorizePath(goalCell!.predecessor, goalCell!.predecessor.delayVisited + 1000);
     }
 }
 
@@ -123,8 +126,9 @@ setGamesize();
                 'start': cell.isStart,
                 'goal': cell.isGoal,
                 'obstacle': cell.isObstacle,
-                'visited': cell.visited}"
-                :style="`--delay: ${cell.delay}ms`">
+                'visited': cell.visited,
+                'path': cell.isPath}"
+                :style="`--delayVisited: ${cell.delayVisited}ms; --delayPath: ${cell.delayPath}ms`">
             </td>
         </tr>       
     </table>
@@ -179,7 +183,21 @@ td {
 
 .visited {
     animation-name: visitedCell;
-    animation-delay: var(--delay);
+    animation-timing-function: linear;
+    animation-delay: var(--delayVisited);
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes pathCell {
+    from {background-color: #085792;}
+    to {background-color: #ffedbb;}
+}
+
+.path {
+    animation-name: pathCell;
+    animation-timing-function: linear;
+    animation-delay: var(--delayPath);
     animation-duration: 1s;
     animation-fill-mode: forwards;
 }

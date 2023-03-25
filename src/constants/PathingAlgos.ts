@@ -15,7 +15,7 @@ export function dijkstra(gameGrid:Cell[][], startCell:Cell): [Cell[][], Cell] {
 
         if (!currN.isStart) {
             currN.visited = true;
-            currN.delay = delay;
+            currN.delayVisited = delay;
         }
 
         for (var n of neighbours) {
@@ -27,7 +27,11 @@ export function dijkstra(gameGrid:Cell[][], startCell:Cell): [Cell[][], Cell] {
             }
         }
 
-        currN = bestN!;
+        if (bestN! !== undefined) {
+            currN = bestN;
+        } else {
+            break;
+        }
 
         if (currN === undefined) break;
         neighbours.push(...getNeighbours(gameGrid, currN));

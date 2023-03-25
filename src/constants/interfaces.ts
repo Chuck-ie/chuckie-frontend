@@ -6,10 +6,12 @@ interface ArrayPos {
 
 export interface Cell {
     pos: ArrayPos,
-    delay: number,
+    delayVisited: number,
+    delayPath: number,
     isStart: boolean,
     isGoal: boolean,
     isObstacle: boolean,
+    isPath: boolean,
     visited: boolean,
     distance: number,
     predecessor: Cell | undefined

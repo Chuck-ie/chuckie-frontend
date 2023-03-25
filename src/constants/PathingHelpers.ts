@@ -44,9 +44,14 @@ export function getStartCell(gameGrid:Cell[][]): Cell {
     return startCell;
 }
 
-export function colorizePath(goalCell:Cell | undefined): void {
+export function colorizePath(cell:Cell | undefined, delay:number): void {
 
-    if (goalCell === undefined) return;
+    if (cell === undefined || cell.isStart) return;
 
+    cell.delayPath = delay;
+    console.log(delay);
+    cell.isPath = true;
+
+    colorizePath(cell.predecessor, delay + 80);
 }
 
