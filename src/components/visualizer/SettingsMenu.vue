@@ -1,10 +1,17 @@
 <script setup lang="ts">
 import Timer from "@/components/visualizer/Timer.vue";
+import { SettingsForm } from "@/constants/interfaces";
 import { ref } from "vue";
 
-defineProps(["algorithms"]);
+const props = defineProps(["algorithms"]);
 
 const timer = ref();
+
+const form = ref<SettingsForm>({
+    algorithm: Object.keys(props.algorithms)[0],
+    speed: 0
+});
+
 </script>
 
 <template>
@@ -12,10 +19,10 @@ const timer = ref();
         <form>
             <ul>
                 <p>Select Algorithm:</p>
-                <li v-for="(algo, i) in algorithms">
-                    <input name="algorithms" :id="i.toString()" type="radio" :checked="i == 0 ? true : false"/>
-                    <label name="algorithms" :for="i.toString()">{{
-                        algo
+                <li v-for="(v, k, i) in algorithms">
+                    <input name="algorithms" :id="k.toString()" type="radio" :value="k" v-model="form.algorithm" :checked="i == 0 ? true : false"/>
+                    <label name="algorithms" :for="k.toString()">{{
+                        v
                     }}</label>
                 </li>
             </ul>
@@ -23,34 +30,31 @@ const timer = ref();
             <ul>
                 <p>Select Speed:</p>
                 <li>
-                    <input name="algospeed" id="1" type="radio" checked/>
+                    <input name="algospeed" id="1" type="radio" :value="0" v-model="form.speed" checked/>
                     <label for="1">1.0 X</label>
                 </li>
                 <li>
-                    <input name="algospeed" id="1" type="radio" />
+                    <input name="algospeed" id="1" type="radio" :value="1" v-model="form.speed"/>
                     <label for="1">0.5 X</label>
                 </li>
                 <li>
-                    <input name="algospeed" id="1" type="radio" />
+                    <input name="algospeed" id="1" type="radio" :value="2" v-model="form.speed"/>
                     <label for="1">step-by-step</label>
                 </li>
             </ul>
         </form>
 
-        <form>
-            
-        </form>
-
         <Timer ref="timer" />
         <div class="buttonsGroup">
-            <div class="menuButton" @click="timer.startTimer()">Start</div>
-            <div class="menuButton" @click="timer.stopTimer()">Stop</div>
-            <div class="menuButton" @click="timer.resetTimer()">Reset</div>
+            <div class="menuButton" @click="timer.startTimer(); $emit('start', form)">Start</div>
+            <!--<div class="menuButton" @click="timer.stopTimer()">Stop</div>-->
+            <div class="menuButton" @click="timer.resetTimer(); $emit('reset')">Reset</div>
         </div>
     </div>
 </template>
 
 <style scoped>
+
 .settingsMenu {
     border: 1px solid;
     width: 12%;
@@ -60,7 +64,7 @@ const timer = ref();
 
 .buttonsGroup {
     display: inline-grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: auto auto;
     width: 100%;
 }
 

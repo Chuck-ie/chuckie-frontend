@@ -1,17 +1,20 @@
 
-export interface SelectedCell {
-    element: HTMLElement,
-    isStart: boolean,
-    isGoal: boolean
-}
-
-export interface Point {
-    x: number,
-    y: number
+interface ArrayPos {
+    row: number,
+    col: number
 }
 
 export interface Cell {
-    visited: string,
+    pos: ArrayPos,
+    isStart: boolean,
+    isGoal: boolean,
+    isObstacle: boolean,
+    visited: boolean,
     distance: number,
-    predecessor: Cell
+    predecessor: Cell | undefined
+}
+
+export interface SettingsForm {
+    algorithm: string,
+    speed: number
 }

@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { Ref } from "vue";
-import { SelectedCell, Point, Cell} from "@/constants/interfaces";
+import { Cell, SettingsForm} from "@/constants/interfaces";
+import { aStar, dijkstra } from '@/constants/PathingAlgos';
+import { getStartCell } from '@/constants/PathingHelpers';
 
+defineExpose({startVisualizer, setGamesize});
 window.addEventListener("resize", () => setGamesize());
-window.addEventListener("mouseup", () => isDragging.value = false);
-const gameGrid:Ref<Array<Cell[]>> = ref([[]]);
-const startCellPt:Ref<Point> = ref({});
-const goalCellPt:Ref<Point> = ref({});
-const isDragging:Ref<boolean> = ref(false);
-const draggedElement:Ref<SelectedCell> = ref({});
+window.addEventListener("mouseup", () => mouseDown.value = false);
+const gameGrid = ref<Cell[][]>([[]]);
+const mouseDown = ref<boolean>(false);
+const draggedElement = ref<Cell | undefined>();
 
 function setGamesize(): void {
 
+    algoRunning = false;
     gameGrid.value = []
     const availableWidth:number = window.innerWidth - Math.max(180, window.innerWidth * 0.15);
     const availableHeight:number = window.innerHeight * 0.8;
@@ -25,68 +26,87 @@ function setGamesize(): void {
         for (var j = 0; j < columns; j++) {
 
             const cell:Cell = {
-                "visited": false,
-                "distance": Infinity,
-                "predecessor": undefined
+                pos: {
+                    row: i,
+                    col: j
+                },
+                isStart: false,
+                isGoal: false,
+                isObstacle: false,
+                visited: false,
+                distance: Infinity,
+                predecessor: undefined
             }
             gameGrid.value[i].push(cell);
         }
     }
 
-    startCellPt.value.x = Math.floor(rows / 2);
-    startCellPt.value.y = Math.floor(columns / 3);
+    const row:number = Math.floor(rows / 2);
+    const col:number = Math.floor(columns / 3);
+    gameGrid.value[row][col].isStart = true;
+    gameGrid.value[row][col].distance = 0;
 
-    goalCellPt.value.x = Math.floor(rows / 2);
-    goalCellPt.value.y = Math.floor(2 * columns / 3);
-
-    gameGrid.value[startCellPt.value.x][startCellPt.value.y].distance = 0;
+    gameGrid.value[row][2 * col].isGoal = true;
 }
 
-function startDragging(evt:any) {
+function startDragging(cell:Cell) {
 
-    isDragging.value = true;
-    const targetCell:HTMLElement = evt.target;
-
-    draggedElement.value.element = targetCell;
-    draggedElement.value.isStart = targetCell.classList.contains('start');
-    draggedElement.value.isGoal = targetCell.classList.contains('goal');
+    mouseDown.value = true;
+    draggedElement.value = cell;
 }
 
-function applyDragging(evt:any, i:number, j:number) {
+function applyDragging(cell:Cell) {
     
-    if (!isDragging.value) { return; }
+    if (!mouseDown.value) { return; }
 
-    const draggingStart:boolean = draggedElement.value.isStart;
-    const draggingGoal:boolean = draggedElement.value.isGoal;
-    const isStart:boolean = evt.target.classList.contains("start");
-    const isGoal:boolean = evt.target.classList.contains("goal");
-    const isObstacle:boolean = evt.target.classList.contains("obstacle");
-
-    if (draggingStart) {
-        startCellPt.value.x = i;
-        startCellPt.value.y = j;
-    } else if (draggingGoal) {
-        goalCellPt.value.x = i;
-        goalCellPt.value.y = j;
-    } else if (!isStart && !isGoal && isObstacle) {
-        evt.target.classList.remove("obstacle");
-    } else if (!isStart && !isGoal) {
-        evt.target.classList.add("obstacle");
+    if (draggedElement.value!.isStart) {
+        draggedElement.value!.isStart = false;
+        cell.isStart = true;
+        draggedElement.value! = cell;
+    } else if (draggedElement.value!.isGoal) {
+        draggedElement.value!.isGoal = false;
+        cell.isGoal = true;
+        draggedElement.value! = cell;
+    } else if (!cell.isStart && !cell.isGoal && cell.isObstacle) {
+        cell.isObstacle = false;
+    } else if (!cell.isStart && !cell.isGoal) {
+        cell.isObstacle = true;
     }
 }
 
-function toggleCell(evt:any) {
+function toggleCell(cell:Cell) {
 
-    const isStart:boolean = evt.target.classList.contains("start");
-    const isGoal:boolean = evt.target.classList.contains("goal");
-    const isObstacle:boolean = evt.target.classList.contains("obstacle");
-    
-    if (isStart || isGoal) {
+    if (cell.isStart || cell.isGoal) {
         return;
-    } else if (isObstacle) {
-        evt.target.classList.remove("obstacle");
+    } else if (cell.isObstacle) {
+        cell.isObstacle = false;   
     } else {
-        evt.target.classList.add("obstacle");
+        cell.isObstacle = true;
+    }
+}
+
+var algoRunning:boolean = false;
+function startVisualizer(form:SettingsForm): void {
+    
+    if (algoRunning) return; 
+
+    
+    algoRunning = true;
+    const startCell:Cell = getStartCell(gameGrid.value)!;
+    let goalCell:Cell;
+    let result:Cell[][];
+
+    switch(form.algorithm) {
+        case("dijkstra"):
+            [result, goalCell] = dijkstra(gameGrid.value, startCell);
+            console.log(result);
+            console.log(goalCell);
+            console.log("dijkstra");
+            break;
+        case("astar"):
+            result = aStar(gameGrid.value, startCell);
+            console.log("astar");
+            break;
     }
 }
 
@@ -95,13 +115,14 @@ setGamesize();
 </script>
 <template>
 
-    <table class="gamefield" ondragstart="return false" @mousedown="startDragging">
-        <tr v-for="(row, i) in gameGrid">
-            <td v-for="(cell, j) in row" @mouseover="applyDragging($event, i, j)" @click="toggleCell"
+    <table class="gamefield" ondragstart="return false">
+        <tr v-for="row in gameGrid">
+            <td v-for="cell in row" @mousedown="startDragging(cell)" @mouseover="applyDragging(cell)" @click="toggleCell(cell)"
                 :class="{
-                    'goal': i == goalCellPt.x && j == goalCellPt.y,
-                    'start': i == startCellPt.x && j == startCellPt.y,
-                    'visited': cell.visited}">
+                'start': cell.isStart,
+                'goal': cell.isGoal,
+                'obstacle': cell.isObstacle,
+                'visited': cell.visited}">
             </td>
         </tr>       
     </table>
@@ -149,7 +170,16 @@ td {
     background-color: black;
 }
 
-.visited {
-
+@keyframes visitedCell {
+    from {background-color: grey;}
+    to {background-color: #085792;}
 }
+
+.visited {
+    animation-delay: var(--delay);
+    animation: visitedCell 1s ease-in;
+    animation-duration: 1s;
+    background-color: #085792;
+}
+
 </style>
