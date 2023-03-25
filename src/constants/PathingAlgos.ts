@@ -5,6 +5,7 @@ export function dijkstra(gameGrid:Cell[][], startCell:Cell): [Cell[][], Cell] {
     
     let currN:Cell = getStartCell(gameGrid)!;
     let neighbours:Cell[] = [...getNeighbours(gameGrid, currN)];
+    let delay:number = 0;
 
     while (neighbours.length > 0 && !currN.isGoal) {
         let bestN:Cell;
@@ -12,7 +13,10 @@ export function dijkstra(gameGrid:Cell[][], startCell:Cell): [Cell[][], Cell] {
 
         if (i >= 0) neighbours.splice(i, 1);
 
-        if (!currN.isStart) currN.visited = true;
+        if (!currN.isStart) {
+            currN.visited = true;
+            currN.delay = delay;
+        }
 
         for (var n of neighbours) {
             if (bestN! === undefined) {
@@ -27,6 +31,7 @@ export function dijkstra(gameGrid:Cell[][], startCell:Cell): [Cell[][], Cell] {
 
         if (currN === undefined) break;
         neighbours.push(...getNeighbours(gameGrid, currN));
+        delay += 10;
     }
 
     return [gameGrid, currN];

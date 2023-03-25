@@ -30,6 +30,7 @@ function setGamesize(): void {
                     row: i,
                     col: j
                 },
+                delay: 0,
                 isStart: false,
                 isGoal: false,
                 isObstacle: false,
@@ -122,7 +123,8 @@ setGamesize();
                 'start': cell.isStart,
                 'goal': cell.isGoal,
                 'obstacle': cell.isObstacle,
-                'visited': cell.visited}">
+                'visited': cell.visited}"
+                :style="`--delay: ${cell.delay}ms`">
             </td>
         </tr>       
     </table>
@@ -176,10 +178,10 @@ td {
 }
 
 .visited {
+    animation-name: visitedCell;
     animation-delay: var(--delay);
-    animation: visitedCell 1s ease-in;
     animation-duration: 1s;
-    background-color: #085792;
+    animation-fill-mode: forwards;
 }
 
 </style>
