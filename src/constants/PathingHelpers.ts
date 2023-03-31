@@ -2,7 +2,9 @@ import { Cell } from "./interfaces";
 
 export function getNeighbours(gameGrid:Cell[][], cell:Cell): Cell[] {
     
-    const neighbourOffsets:[number, number][] = [[-1, 0], [0, 1], [1, 0], [0, -1]];
+
+
+    const neighbourOffsets:[number, number][] = [[0, -1], [1, 0], [-1, 0], [0, 1]];
     let neighbours:Cell[] = [];
     
     for (var [x, y] of neighbourOffsets) {
@@ -42,16 +44,5 @@ export function getStartCell(gameGrid:Cell[][]): Cell {
     }
 
     return startCell;
-}
-
-export function colorizePath(cell:Cell | undefined, delay:number): void {
-
-    if (cell === undefined || cell.isStart) return;
-
-    cell.delayPath = delay;
-    console.log(delay);
-    cell.isPath = true;
-
-    colorizePath(cell.predecessor, delay + 80);
 }
 

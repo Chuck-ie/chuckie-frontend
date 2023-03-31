@@ -1,21 +1,24 @@
+import { Colorizer } from "./Colorizer";
 import { Cell } from "./interfaces";
 import { getNeighbours, getStartCell } from "./PathingHelpers";
 
-export function dijkstra(gameGrid:Cell[][], startCell:Cell): [Cell[][], Cell] {
+export function dijkstra(gameGrid:Cell[][], start:Cell): [Cell[], Cell] {
     
-    let currN:Cell = getStartCell(gameGrid)!;
+    let currN:Cell = start;
     let neighbours:Cell[] = [...getNeighbours(gameGrid, currN)];
     let delay:number = 0;
+    let visited:Cell[] = [];
 
     while (neighbours.length > 0 && !currN.isGoal) {
-        let bestN:Cell;
-        let i:number = neighbours.indexOf(currN);
 
+        let bestN:Cell;
+        // remove current node
+        let i:number = neighbours.indexOf(currN);
         if (i >= 0) neighbours.splice(i, 1);
 
         if (!currN.isStart) {
             currN.visited = true;
-            currN.delayVisited = delay;
+            visited.push(currN);
         }
 
         for (var n of neighbours) {
@@ -38,10 +41,13 @@ export function dijkstra(gameGrid:Cell[][], startCell:Cell): [Cell[][], Cell] {
         delay += 10;
     }
 
-    return [gameGrid, currN];
+    return [visited, currN];
 }
 
-export function aStar(gameGrid:Cell[][], startCell:Cell): Cell[][] {
+export function aStar(gameGrid:Cell[][], start:Cell): [Cell[], Cell] {
 
-    return gameGrid;
+    let currN:Cell = start;
+    let visited:Cell[] = [];
+
+    return [visited, currN];
 }

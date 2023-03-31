@@ -1,0 +1,69 @@
+import { Cell } from "./interfaces";
+
+export class Colorizer {
+ 
+    static gameGrid:Cell[][];
+    static colorizerSpeed:number;
+    static delay:number = 20;
+
+    constructor(gameGrid:Cell[][], speed:number) {
+        Colorizer.gameGrid = gameGrid;
+        Colorizer.colorizerSpeed = speed;
+    }
+
+    public static colorizePath(goal:Cell): Promise<void> {
+        
+        var currN:Cell = goal;
+
+        return new Promise<void>(async (resolve, reject) => {
+            if (this.gameGrid == undefined) {
+                reject("gameGrid is undefined");
+            }
+
+            if (!goal.isGoal) {
+                reject("The algorithm couldn't find the goal");
+            }
+
+            while (currN.predecessor !== undefined && !currN.predecessor.isStart) {
+                await Colorizer.colorizeCell(currN.predecessor, "path");
+                currN = currN.predecessor;
+            }
+
+            resolve();
+        })
+    }
+
+    public static colorizeVisited(visited:Cell[]): Promise<void> {
+        
+        return new Promise<void>(async (resolve, reject) => {
+            if (this.gameGrid == undefined) {
+                reject("gameGrid is undefined");
+            }
+            
+            for (var i = 0; i < visited.length; i++) {
+                await Colorizer.colorizeCell(visited[i], "visited");
+            }
+
+            resolve();
+        })
+    }
+
+    private static async colorizeCell(cell:Cell, option:string): Promise<void> {
+        
+        return new Promise<void>((resolve) => {
+            setTimeout(() => {
+                switch(option) {
+                    case "path":
+                        Colorizer.gameGrid[cell.pos.row][cell.pos.col].animation.path = true;
+                        break;
+
+                    case "visited":
+                        Colorizer.gameGrid[cell.pos.row][cell.pos.col].animation.visited = true;
+                        break;
+                }
+                resolve();
+
+            }, this.delay);
+        })
+    }
+}

@@ -2,7 +2,8 @@
 import { ref } from 'vue';
 import { Cell, SettingsForm} from "@/constants/interfaces";
 import { aStar, dijkstra } from '@/constants/PathingAlgos';
-import { colorizePath, getStartCell } from '@/constants/PathingHelpers';
+import { getStartCell } from '@/constants/PathingHelpers';
+import { Colorizer } from '@/constants/Colorizer';
 
 defineExpose({startVisualizer, setGamesize});
 window.addEventListener("resize", () => setGamesize());
@@ -26,16 +27,17 @@ function setGamesize(): void {
         for (var j = 0; j < columns; j++) {
 
             const cell:Cell = {
+                animation: {
+                    visited: false,
+                    path: false
+                },
                 pos: {
                     row: i,
                     col: j
                 },
-                delayVisited: 0,
-                delayPath: 0,
                 isStart: false,
                 isGoal: false,
                 isObstacle: false,
-                isPath: false,
                 visited: false,
                 distance: Infinity,
                 predecessor: undefined
@@ -89,29 +91,35 @@ function toggleCell(cell:Cell) {
 }
 
 var algoRunning:boolean = false;
-function startVisualizer(form:SettingsForm): void {
+async function startVisualizer(form:SettingsForm): Promise<void> {
     
     if (algoRunning) return; 
 
-    
     algoRunning = true;
-    const startCell:Cell = getStartCell(gameGrid.value)!;
-    let goalCell:Cell;
-    let result:Cell[][];
+    const start:Cell = getStartCell(gameGrid.value)!;
+    let goal:Cell;
+    let visited:Cell[];
+    
+    const t0 = performance.now();
 
     switch(form.algorithm) {
         case("dijkstra"):
-            [result, goalCell] = dijkstra(gameGrid.value, startCell);
+            [visited, goal] = dijkstra(gameGrid.value, start);
+            
             break;
         case("astar"):
-            result = aStar(gameGrid.value, startCell);
+            [visited, goal] = aStar(gameGrid.value, start);
             console.log("astar");
             break;
     }
-    
-    if (goalCell!.predecessor !== undefined) {
-        colorizePath(goalCell!.predecessor, goalCell!.predecessor.delayVisited + 1000);
-    }
+
+    const t1 = performance.now();
+    console.log("dijkstra", t1 - t0);
+    algoRunning = false;
+
+    new Colorizer(gameGrid.value, form.speed);
+    await Colorizer.colorizeVisited(visited!);
+    await Colorizer.colorizePath(goal!);
 }
 
 setGamesize();
@@ -123,12 +131,12 @@ setGamesize();
         <tr v-for="row in gameGrid">
             <td v-for="cell in row" @mousedown="startDragging(cell)" @mouseover="applyDragging(cell)" @click="toggleCell(cell)"
                 :class="{
-                'start': cell.isStart,
-                'goal': cell.isGoal,
-                'obstacle': cell.isObstacle,
-                'visited': cell.visited,
-                'path': cell.isPath}"
-                :style="`--delayVisited: ${cell.delayVisited}ms; --delayPath: ${cell.delayPath}ms`">
+                    'start': cell.isStart,
+                    'goal': cell.isGoal,
+                    'obstacle': cell.isObstacle,
+                    'visited': cell.animation.visited,
+                    'path': cell.animation.path
+                }">
             </td>
         </tr>       
     </table>
@@ -157,7 +165,7 @@ td {
     width: 20px;
     height: 20px;
     padding: 0;
-    margin: 0;
+    margin: 0; 
     border: 1px solid white;
     border-right: 0;
     border-bottom: 0;
@@ -176,28 +184,26 @@ td {
     background-color: black;
 }
 
-@keyframes visitedCell {
+@keyframes visitedAnimation {
     from {background-color: grey;}
     to {background-color: #085792;}
 }
 
 .visited {
-    animation-name: visitedCell;
-    animation-timing-function: linear;
-    animation-delay: var(--delayVisited);
+    animation-name: visitedAnimation;
+    animation-delay: 0s;
     animation-duration: 1s;
     animation-fill-mode: forwards;
 }
 
-@keyframes pathCell {
+@keyframes pathAnimation {
     from {background-color: #085792;}
     to {background-color: #ffedbb;}
 }
 
 .path {
-    animation-name: pathCell;
-    animation-timing-function: linear;
-    animation-delay: var(--delayPath);
+    animation-name: pathAnimation;
+    animation-delay: 0s;
     animation-duration: 1s;
     animation-fill-mode: forwards;
 }
