@@ -23,3 +23,7 @@ export interface SettingsForm {
     speed: number
 }
 
+export interface ColorizerArgs {
+    param: Cell | Cell[],
+    callback: (param:Cell | Cell[]) => Promise<void>
+}

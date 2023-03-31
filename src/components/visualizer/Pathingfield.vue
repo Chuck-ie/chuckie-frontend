@@ -118,8 +118,16 @@ async function startVisualizer(form:SettingsForm): Promise<void> {
     algoRunning = false;
 
     new Colorizer(gameGrid.value, form.speed);
-    await Colorizer.colorizeVisited(visited!);
-    await Colorizer.colorizePath(goal!);
+
+    await Colorizer.colorize({
+        param: visited!, 
+        callback: Colorizer.colorizeVisited
+    });
+    
+    await Colorizer.colorize({
+        param: goal!,
+        callback: Colorizer.colorizePath
+    });
 }
 
 setGamesize();

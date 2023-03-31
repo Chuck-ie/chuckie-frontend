@@ -1,4 +1,4 @@
-import { Cell } from "./interfaces";
+import { Cell, ColorizerArgs } from "./interfaces";
 
 export class Colorizer {
  
@@ -11,44 +11,34 @@ export class Colorizer {
         Colorizer.colorizerSpeed = speed;
     }
 
-    public static colorizePath(goal:Cell): Promise<void> {
-        
-        var currN:Cell = goal;
-
-        return new Promise<void>(async (resolve, reject) => {
-            if (this.gameGrid == undefined) {
-                reject("gameGrid is undefined");
-            }
-
-            if (!goal.isGoal) {
-                reject("The algorithm couldn't find the goal");
-            }
-
-            while (currN.predecessor !== undefined && !currN.predecessor.isStart) {
-                await Colorizer.colorizeCell(currN.predecessor, "path");
-                currN = currN.predecessor;
-            }
-
-            resolve();
-        })
-    }
-
-    public static colorizeVisited(visited:Cell[]): Promise<void> {
+    public static async colorize(args:ColorizerArgs): Promise<void> {
         
         return new Promise<void>(async (resolve, reject) => {
             if (this.gameGrid == undefined) {
                 reject("gameGrid is undefined");
             }
-            
-            for (var i = 0; i < visited.length; i++) {
-                await Colorizer.colorizeCell(visited[i], "visited");
-            }
 
-            resolve();
+            resolve(await args.callback(args.param));
         })
+
     }
 
-    private static async colorizeCell(cell:Cell, option:string): Promise<void> {
+    public static async colorizeVisited(visited:Cell[]): Promise<void> {
+        
+        for (var i = 0; i < visited.length; i++) {
+            await this.#colorizeCell(visited[i], "visited");
+        }
+    }
+
+    public static async colorizePath(currN:Cell): Promise<void> {
+        
+        while (currN.predecessor !== undefined && !currN.predecessor.isStart) {
+            await this.#colorizeCell(currN.predecessor, "path");
+            currN = currN.predecessor;
+        }
+    }
+
+    static async #colorizeCell(cell:Cell, option:string): Promise<void> {
         
         return new Promise<void>((resolve) => {
             setTimeout(() => {
