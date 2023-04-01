@@ -11,31 +11,35 @@ export class Colorizer {
         Colorizer.colorizerSpeed = speed;
     }
 
-    public static async colorize(args:ColorizerArgs): Promise<void> {
+    public static async colorizeVisited(visited:Cell[]): Promise<void> {
         
         return new Promise<void>(async (resolve, reject) => {
             if (this.gameGrid == undefined) {
                 reject("gameGrid is undefined");
             }
 
-            resolve(await args.callback(args.param));
+            for (var i = 0; i < visited.length; i++) {
+                await this.#colorizeCell(visited[i], "visited");
+            }
+
+            resolve();
         })
-
-    }
-
-    public static async colorizeVisited(visited:Cell[]): Promise<void> {
-        
-        for (var i = 0; i < visited.length; i++) {
-            await this.#colorizeCell(visited[i], "visited");
-        }
     }
 
     public static async colorizePath(currN:Cell): Promise<void> {
         
-        while (currN.predecessor !== undefined && !currN.predecessor.isStart) {
-            await this.#colorizeCell(currN.predecessor, "path");
-            currN = currN.predecessor;
-        }
+        return new Promise<void>(async (resolve, reject) => {
+            if (this.gameGrid == undefined) {
+                reject("gameGrid is undefined");
+            }
+
+            while (currN.predecessor !== undefined && !currN.predecessor.isStart) {
+                await this.#colorizeCell(currN.predecessor, "path");
+                currN = currN.predecessor;
+            }
+
+            resolve();
+        })
     }
 
     static async #colorizeCell(cell:Cell, option:string): Promise<void> {

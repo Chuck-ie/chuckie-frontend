@@ -25,5 +25,5 @@ export interface SettingsForm {
 
 export interface ColorizerArgs {
     param: Cell | Cell[],
-    callback: (param:Cell | Cell[]) => Promise<void>
+    callback: (param: Cell | Cell[]) => Promise<void>
 }
