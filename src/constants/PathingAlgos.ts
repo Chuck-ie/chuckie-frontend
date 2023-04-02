@@ -1,4 +1,3 @@
-import { Colorizer } from "./Colorizer";
 import { Cell } from "./interfaces";
 import { getNeighbours, getStartCell } from "./PathingHelpers";
 

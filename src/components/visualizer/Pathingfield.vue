@@ -66,14 +66,19 @@ function applyDragging(cell:Cell) {
 
     if (draggedElement.value!.isStart) {
         draggedElement.value!.isStart = false;
+        draggedElement.value!.distance = Infinity;
         cell.isStart = true;
+        cell.distance = 0;
         draggedElement.value! = cell;
+
     } else if (draggedElement.value!.isGoal) {
         draggedElement.value!.isGoal = false;
         cell.isGoal = true;
         draggedElement.value! = cell;
+
     } else if (!cell.isStart && !cell.isGoal && cell.isObstacle) {
         cell.isObstacle = false;
+
     } else if (!cell.isStart && !cell.isGoal) {
         cell.isObstacle = true;
     }
@@ -131,13 +136,13 @@ setGamesize();
     <table class="gamefield" ondragstart="return false">
         <tr v-for="row in gameGrid">
             <td v-for="cell in row" @mousedown="startDragging(cell)" @mouseover="applyDragging(cell)" @click="toggleCell(cell)"
-                :class="{
+                :class="[`${cell.pos.row}`, `${cell.pos.col}`, {
                     'start': cell.isStart,
                     'goal': cell.isGoal,
                     'obstacle': cell.isObstacle,
                     'visited': cell.animation.visited,
                     'path': cell.animation.path
-                }">
+                }]">
             </td>
         </tr>       
     </table>

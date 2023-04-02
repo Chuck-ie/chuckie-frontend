@@ -2,8 +2,6 @@ import { Cell } from "./interfaces";
 
 export function getNeighbours(gameGrid:Cell[][], cell:Cell): Cell[] {
     
-
-
     const neighbourOffsets:[number, number][] = [[0, -1], [1, 0], [-1, 0], [0, 1]];
     let neighbours:Cell[] = [];
     

@@ -1,4 +1,4 @@
-import { Cell, ColorizerArgs } from "./interfaces";
+import { Cell } from "./interfaces";
 
 export class Colorizer {
  
