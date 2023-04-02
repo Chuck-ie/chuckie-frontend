@@ -44,11 +44,6 @@ export class Colorizer {
 
             while (currN.predecessor !== undefined && !currN.predecessor.isStart) {
                 await this.#colorizeCell(currN.predecessor, "path");
-
-                // if (this.colorizerSpeed === 2) {
-                //     await this.#awaitUserInput(Colorizer.stepCounter);
-                // }
-
                 currN = currN.predecessor;
             }
 
