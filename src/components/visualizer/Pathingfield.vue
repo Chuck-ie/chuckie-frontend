@@ -6,6 +6,7 @@ import { getStartCell } from '@/constants/PathingHelpers';
 import { Colorizer } from '@/constants/Colorizer';
 
 defineExpose({startVisualizer, setGamesize});
+const emit = defineEmits(["finished"]);
 window.addEventListener("resize", () => setGamesize());
 window.addEventListener("mouseup", () => mouseDown.value = false);
 const gameGrid = ref<Cell[][]>([[]]);
@@ -19,8 +20,8 @@ function setGamesize(): void {
     const availableWidth:number = window.innerWidth - Math.max(180, window.innerWidth * 0.15);
     const availableHeight:number = window.innerHeight * 0.8;
     
-    const columns:number = Math.floor(availableWidth/20);
-    const rows:number = Math.floor(availableHeight/20);
+    const columns:number = Math.floor(availableWidth/40);
+    const rows:number = Math.floor(availableHeight/40);
 
     for (var i = 0; i < rows; i++) {
         gameGrid.value.push([]);
@@ -56,6 +57,7 @@ function setGamesize(): void {
 
 function startDragging(cell:Cell) {
 
+    if (algoRunning) { return; }
     mouseDown.value = true;
     draggedElement.value = cell;
 }
@@ -85,6 +87,8 @@ function applyDragging(cell:Cell) {
 }
 
 function toggleCell(cell:Cell) {
+
+    if (algoRunning) { return; }
 
     if (cell.isStart || cell.isGoal) {
         return;
@@ -120,12 +124,13 @@ async function startVisualizer(form:SettingsForm): Promise<void> {
 
     const t1 = performance.now();
     console.log("dijkstra", t1 - t0);
-    algoRunning = false;
 
     new Colorizer(gameGrid.value, form.speed);
 
     await Colorizer.colorizeVisited(visited!);
+    emit("finished");
     await Colorizer.colorizePath(goal!);
+    algoRunning = false;
 }
 
 setGamesize();
@@ -168,8 +173,8 @@ tr:last-child td {
 }
 
 td {
-    width: 20px;
-    height: 20px;
+    width: 40px;
+    height: 40px;
     padding: 0;
     margin: 0; 
     border: 1px solid white;

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-defineExpose({ startTimer, stopTimer, resetTimer });
 
 const formattedTime = ref("0.000");
 var interval: number = 0;
@@ -10,6 +9,7 @@ function startTimer(): void {
     if (interval) {
         return;
     }
+
     // we use 52 to trick the user into thinking the timer refreshes more times
     // than it actually does to reduce computation complexity
     interval = setInterval(() => {
@@ -28,6 +28,9 @@ function resetTimer(): void {
     passedTime = 0;
     formattedTime.value = "0.000";
 }
+
+defineExpose({ startTimer, stopTimer, resetTimer });
+
 </script>
 
 <template>

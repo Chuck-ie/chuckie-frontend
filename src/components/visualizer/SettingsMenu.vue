@@ -4,6 +4,7 @@ import { SettingsForm } from "@/constants/interfaces";
 import { ref } from "vue";
 
 const props = defineProps(["algorithms"]);
+const emit = defineEmits(["start", "reset", "next"]);
 
 const timer = ref();
 
@@ -11,6 +12,40 @@ const form = ref<SettingsForm>({
     algorithm: Object.keys(props.algorithms)[0],
     speed: 0
 });
+
+const activeForm = ref<SettingsForm>({
+    algorithm: Object.keys(props.algorithms)[0],
+    speed: 0
+});
+
+const algoRunning = ref(false);
+
+function stopGame(): void {
+    timer.value.stopTimer();
+    algoRunning.value = false;
+    activeForm.value.algorithm = Object.keys(props.algorithms)[0];
+    activeForm.value.speed = 0;
+}
+
+function startGame(): void {
+    algoRunning.value = true;
+    activeForm.value.algorithm = form.value.algorithm;
+    activeForm.value.speed = form.value.speed;
+    
+    if (activeForm.value.speed !== 2) {
+        timer.value.startTimer();
+    }
+
+    emit("start", activeForm.value);
+    console.log(activeForm.value);
+}
+
+function resetGame(): void {
+    timer.value.resetTimer();
+    algoRunning.value = false;
+    emit("reset");
+}
+defineExpose({ stopGame });
 
 </script>
 
@@ -46,9 +81,10 @@ const form = ref<SettingsForm>({
 
         <Timer ref="timer" />
         <div class="buttonsGroup">
-            <div class="menuButton" @click="timer.startTimer(); $emit('start', form)">Start</div>
+            <div v-if="activeForm.speed === 2 && algoRunning" class="menuButton" @click="$emit('next')">Next Step</div>
+            <div v-else class="menuButton" @click="startGame()">Start</div>
             <!--<div class="menuButton" @click="timer.stopTimer()">Stop</div>-->
-            <div class="menuButton" @click="timer.resetTimer(); $emit('reset')">Reset</div>
+            <div class="menuButton" @click="resetGame()">Reset</div>
         </div>
     </div>
 </template>
