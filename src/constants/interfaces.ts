@@ -5,10 +5,11 @@ interface ArrayPos {
 }
 
 export interface Cell {
-    animation: {
-        visited: boolean,
-        path: boolean
-    },
+    // animation: {
+    //     visited: boolean,
+    //     path: boolean
+    // },
+    animation: string,
     pos: ArrayPos,
     isStart: boolean,
     isGoal: boolean,
@@ -58,4 +59,11 @@ export enum SettingsSpeed {
     HALF = 2,
     STEP_BY_STEP = 3,
     REAL_TIME = 4
+}
+
+export enum Animations {
+    VISITED_DELAYED = "visited",
+    VISITED_REALTIME = "visitedColor",
+    PATH_DELAYED = "path",
+    PATH_REALTIME = "pathColor",
 }

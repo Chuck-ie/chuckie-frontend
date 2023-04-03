@@ -3,7 +3,7 @@ import Timer from "@/components/visualizer/Timer.vue";
 import { SettingsForm, SettingsSpeed } from "@/constants/interfaces";
 import { ref } from "vue";
 
-const props = defineProps(["algorithms"]);
+const props = defineProps(["algorithms", "activeForm", "algoRunning"]);
 const emit = defineEmits(["start", "reset", "next"]);
 
 const timer = ref();
@@ -13,39 +13,27 @@ const form = ref<SettingsForm>({
     speed: 0
 });
 
-const activeForm = ref<SettingsForm>({
-    algorithm:props.algorithms[Object.keys(props.algorithms)[0]], 
-    speed: 0
-});
-
-const algoRunning = ref(false);
-
-function stopGame(): void {
-    timer.value.stopTimer();
-    algoRunning.value = false;
-    activeForm.value.algorithm = Object.keys(props.algorithms)[0];
-    activeForm.value.speed = 0;
-}
+// function stopGame(): void {
+//     timer.value.stopTimer();
+//     props.algoRunning.value = false;
+//     props.activeForm.value.algorithm = Object.keys(props.algorithms)[0];
+//     props.activeForm.value.speed = 0;
+// }
 
 function startGame(): void {
-    algoRunning.value = true;
-    activeForm.value.algorithm = form.value.algorithm;
-    activeForm.value.speed = form.value.speed;
     
-    if (activeForm.value.speed !== 2) {
+    if (props.activeForm.speed !== SettingsSpeed.STEP_BY_STEP) {
         timer.value.startTimer();
     }
 
-    emit("start", activeForm.value);
-    console.log(activeForm.value);
+    emit("start", props.activeForm.value);
 }
 
 function resetGame(): void {
     timer.value.resetTimer();
-    algoRunning.value = false;
     emit("reset");
 }
-defineExpose({ stopGame });
+//defineExpose({ stopGame });
 
 </script>
 
@@ -86,7 +74,7 @@ defineExpose({ stopGame });
 
         <Timer ref="timer" />
         <div class="buttonsGroup">
-            <div v-if="activeForm.speed === 2 && algoRunning" class="menuButton" @click="$emit('next')">Next Step</div>
+            <div v-if="activeForm.speed === SettingsSpeed.STEP_BY_STEP && algoRunning" class="menuButton" @click="$emit('next')">Next Step</div>
             <div v-else class="menuButton" @click="startGame()">Start</div>
             <!--<div class="menuButton" @click="timer.stopTimer()">Stop</div>-->
             <div class="menuButton" @click="resetGame()">Reset</div>

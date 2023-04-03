@@ -1,4 +1,4 @@
-import { Cell, SettingsSpeed } from "./interfaces";
+import { Animations, Cell, SettingsSpeed } from "./interfaces";
 
 export class Colorizer {
  
@@ -24,7 +24,13 @@ export class Colorizer {
             }
 
             for (var i = 0; i < visited.length; i++) {
-                await this.#colorizeCell(visited[i], "visited");
+
+                if (this.colorizerSpeed === SettingsSpeed.REAL_TIME) {
+                    this.#colorizeCell(visited[i], "VISITED_REALTIME", false);
+                    continue;
+                }
+
+                await this.#colorizeCell(visited[i], "VISITED_DELAYED", true);
 
                 if (this.colorizerSpeed === SettingsSpeed.STEP_BY_STEP) {
                     await this.#awaitUserInput(Colorizer.stepCounter);
@@ -43,7 +49,14 @@ export class Colorizer {
             }
 
             while (currN.predecessor !== undefined && !currN.predecessor.isStart) {
-                await this.#colorizeCell(currN.predecessor, "path");
+
+                if (this.colorizerSpeed === SettingsSpeed.REAL_TIME) {
+                    this.#colorizeCell(currN.predecessor, "PATH_REALTIME", false);
+                    currN = currN.predecessor;
+                    continue;
+                }
+
+                await this.#colorizeCell(currN.predecessor, "PATH_DELAYED", true);
                 currN = currN.predecessor;
             }
 
@@ -51,22 +64,19 @@ export class Colorizer {
         })
     }
 
-    static async #colorizeCell(cell:Cell, option:string): Promise<void> {
-        
+    static async #colorizeCell(cell:Cell, animation: keyof typeof Animations, useTimeout:boolean): Promise<void> {
+
         return new Promise<void>((resolve) => {
-            setTimeout(() => {
-                switch(option) {
-                    case "path":
-                        Colorizer.gameGrid[cell.pos.row][cell.pos.col].animation.path = true;
-                        break;
+            if (useTimeout) {
+                setTimeout(() => {
+                    this.#colorizeCell(cell, animation, false);
+                    resolve();
+                }, this.delay / this.colorizerSpeed);
+                return;
+            }
 
-                    case "visited":
-                        Colorizer.gameGrid[cell.pos.row][cell.pos.col].animation.visited = true;
-                        break;
-                }
-                resolve();
-
-            }, this.delay);
+            Colorizer.gameGrid[cell.pos.row][cell.pos.col].animation = Animations[animation];
+            resolve();
         })
     }
 

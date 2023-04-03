@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Cell, PathingAlgos, SettingsForm} from "@/constants/interfaces";
+import { Cell, PathingAlgos, SettingsForm } from "@/constants/interfaces";
 import { aStar, dijkstra } from '@/constants/PathingAlgos';
 import { getStartCell } from '@/constants/PathingHelpers';
 import { Colorizer } from '@/constants/Colorizer';
 
-defineExpose({startVisualizer, setGamesize});
 const emit = defineEmits(["finished"]);
 window.addEventListener("resize", () => setGamesize());
 window.addEventListener("mouseup", () => mouseDown.value = false);
@@ -33,10 +32,11 @@ function setGamesize(): void {
         for (var j = 0; j < columns; j++) {
 
             const cell:Cell = {
-                animation: {
-                    visited: false,
-                    path: false
-                },
+                // animation: {
+                //     visited: false,
+                //     path: false
+                // },
+                animation: "",
                 pos: {
                     row: i,
                     col: j
@@ -105,10 +105,12 @@ function toggleCell(cell:Cell) {
 }
 
 var algoRunning:boolean = false;
+var activeForm:SettingsForm = {} as SettingsForm;
 async function startVisualizer(form:SettingsForm): Promise<void> {
     
     if (algoRunning) return; 
 
+    activeForm = form;
     algoRunning = true;
     const start:Cell = getStartCell(gameGrid.value)!;
     let goal:Cell;
@@ -130,14 +132,17 @@ async function startVisualizer(form:SettingsForm): Promise<void> {
     console.log("dijkstra", t1 - t0);
 
     new Colorizer(gameGrid.value, form.speed);
+    //const useTimeout:boolean = form.speed !== SettingsSpeed.REAL_TIME;
 
     await Colorizer.colorizeVisited(visited!);
     emit("finished");
     await Colorizer.colorizePath(goal!);
+    console.log("done");
     algoRunning = false;
 }
 
 setGamesize();
+defineExpose({startVisualizer, setGamesize, algoRunning, activeForm});
 
 </script>
 <template>
@@ -145,12 +150,10 @@ setGamesize();
     <table class="gamefield" :style="{width: gridWidth, height: gridHeight}" ondragstart="return false">
         <tr v-for="row in gameGrid">
             <td v-for="cell in row" @mousedown="startDragging(cell)" @mouseover="applyDragging(cell)" @click="toggleCell(cell)"
-                :class="[`${cell.pos.row}`, `${cell.pos.col}`, {
+                :class="[cell.animation, {
                     'start': cell.isStart,
                     'goal': cell.isGoal,
                     'obstacle': cell.isObstacle,
-                    'visited': cell.animation.visited,
-                    'path': cell.animation.path
                 }]">
             </td>
         </tr>       
@@ -197,6 +200,14 @@ td {
 
 .obstacle {
     background-color: black;
+}
+
+.visitedColor {
+    background-color: #085792;
+}
+
+.pathColor {
+    background-color: #ffedbb;
 }
 
 @keyframes visitedAnimation {
