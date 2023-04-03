@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Cell, SettingsForm} from "@/constants/interfaces";
+import { Cell, PathingAlgos, SettingsForm} from "@/constants/interfaces";
 import { aStar, dijkstra } from '@/constants/PathingAlgos';
 import { getStartCell } from '@/constants/PathingHelpers';
 import { Colorizer } from '@/constants/Colorizer';
@@ -12,6 +12,8 @@ window.addEventListener("mouseup", () => mouseDown.value = false);
 const gameGrid = ref<Cell[][]>([[]]);
 const mouseDown = ref<boolean>(false);
 const draggedElement = ref<Cell | undefined>();
+const gridWidth = ref<string>("");
+const gridHeight = ref<string>("");
 
 function setGamesize(): void {
 
@@ -22,6 +24,9 @@ function setGamesize(): void {
     
     const columns:number = Math.floor(availableWidth/40);
     const rows:number = Math.floor(availableHeight/40);
+
+    gridWidth.value = columns * 40 + 'px';
+    gridHeight.value = rows * 40 + 'px';
 
     for (var i = 0; i < rows; i++) {
         gameGrid.value.push([]);
@@ -112,13 +117,12 @@ async function startVisualizer(form:SettingsForm): Promise<void> {
     const t0 = performance.now();
 
     switch(form.algorithm) {
-        case("dijkstra"):
+        case PathingAlgos.DIJKSTRA:
             [visited, goal] = dijkstra(gameGrid.value, start);
-            
             break;
-        case("astar"):
+
+        case PathingAlgos.ASTAR:
             [visited, goal] = aStar(gameGrid.value, start);
-            console.log("astar");
             break;
     }
 
@@ -138,7 +142,7 @@ setGamesize();
 </script>
 <template>
 
-    <table class="gamefield" ondragstart="return false">
+    <table class="gamefield" :style="{width: gridWidth, height: gridHeight}" ondragstart="return false">
         <tr v-for="row in gameGrid">
             <td v-for="cell in row" @mousedown="startDragging(cell)" @mouseover="applyDragging(cell)" @click="toggleCell(cell)"
                 :class="[`${cell.pos.row}`, `${cell.pos.col}`, {

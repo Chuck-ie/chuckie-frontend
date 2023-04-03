@@ -1,4 +1,4 @@
-import { Cell } from "./interfaces";
+import { Cell, SettingsSpeed } from "./interfaces";
 
 export class Colorizer {
  
@@ -26,7 +26,7 @@ export class Colorizer {
             for (var i = 0; i < visited.length; i++) {
                 await this.#colorizeCell(visited[i], "visited");
 
-                if (this.colorizerSpeed === 2) {
+                if (this.colorizerSpeed === SettingsSpeed.STEP_BY_STEP) {
                     await this.#awaitUserInput(Colorizer.stepCounter);
                 }
             }

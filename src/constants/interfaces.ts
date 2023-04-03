@@ -52,3 +52,10 @@ export enum SortingAlgos {
     QUICK_SORT = "quicksort",
     HEAP_SORT = "heapsort",
 }
+
+export enum SettingsSpeed {
+    DEFAULT = 1,
+    HALF = 2,
+    STEP_BY_STEP = 3,
+    REAL_TIME = 4
+}

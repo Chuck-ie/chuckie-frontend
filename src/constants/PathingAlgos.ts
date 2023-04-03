@@ -1,5 +1,5 @@
 import { Cell } from "./interfaces";
-import { getNeighbours, getStartCell } from "./PathingHelpers";
+import { getNeighbours } from "./PathingHelpers";
 
 export function dijkstra(gameGrid:Cell[][], start:Cell): [Cell[], Cell] {
     

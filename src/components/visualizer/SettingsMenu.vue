@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Timer from "@/components/visualizer/Timer.vue";
-import { SettingsForm } from "@/constants/interfaces";
+import { SettingsForm, SettingsSpeed } from "@/constants/interfaces";
 import { ref } from "vue";
 
 const props = defineProps(["algorithms"]);
@@ -9,12 +9,12 @@ const emit = defineEmits(["start", "reset", "next"]);
 const timer = ref();
 
 const form = ref<SettingsForm>({
-    algorithm: Object.keys(props.algorithms)[0],
+    algorithm: props.algorithms[Object.keys(props.algorithms)[0]],
     speed: 0
 });
 
 const activeForm = ref<SettingsForm>({
-    algorithm: Object.keys(props.algorithms)[0],
+    algorithm:props.algorithms[Object.keys(props.algorithms)[0]], 
     speed: 0
 });
 
@@ -55,9 +55,9 @@ defineExpose({ stopGame });
             <ul>
                 <p>Select Algorithm:</p>
                 <li v-for="(v, k, i) in algorithms">
-                    <input name="algorithms" :id="k.toString()" type="radio" :value="k" v-model="form.algorithm" :checked="i == 0 ? true : false"/>
-                    <label name="algorithms" :for="k.toString()">{{
-                        v
+                    <input name="algorithms" :id="v.toString()" type="radio" :value="v" v-model="form.algorithm" :checked="i == 0 ? true : false"/>
+                    <label name="algorithms" :for="v.toString()">{{
+                        k
                     }}</label>
                 </li>
             </ul>
@@ -65,17 +65,22 @@ defineExpose({ stopGame });
             <ul>
                 <p>Select Speed:</p>
                 <li>
-                    <input name="algospeed" id="1" type="radio" :value="0" v-model="form.speed" checked/>
+                    <input name="algospeed" id="1" type="radio" :value="SettingsSpeed.DEFAULT" v-model="form.speed" checked/>
                     <label for="1">1.0 X</label>
                 </li>
                 <li>
-                    <input name="algospeed" id="1" type="radio" :value="1" v-model="form.speed"/>
+                    <input name="algospeed" id="1" type="radio" :value="SettingsSpeed.HALF" v-model="form.speed"/>
                     <label for="1">0.5 X</label>
                 </li>
                 <li>
-                    <input name="algospeed" id="1" type="radio" :value="2" v-model="form.speed"/>
+                    <input name="algospeed" id="1" type="radio" :value="SettingsSpeed.STEP_BY_STEP" v-model="form.speed"/>
                     <label for="1">step-by-step</label>
                 </li>
+                <li>
+                    <input name="algospeed" id="1" type="radio" :value="SettingsSpeed.REAL_TIME" v-model="form.speed"/>
+                    <label for="1">Realtime</label>
+                </li>
+
             </ul>
         </form>
 
