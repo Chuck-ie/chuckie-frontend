@@ -23,7 +23,7 @@ export function dijkstra(gameGrid:Cell[][], start:Cell): [Cell[], Cell] {
             if (bestN! === undefined) {
                 bestN = n;
             }
-            if (n.distance <= bestN.distance) {
+            if (n.distance < bestN.distance) {
                 bestN = n;
             }
         }
