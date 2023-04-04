@@ -16,7 +16,7 @@ ul {
 }
 
 li {
-    display: inline;
+    display: inline-block;
     margin-right: 10px;
     margin-left: 10px;
     margin-top: 2px;

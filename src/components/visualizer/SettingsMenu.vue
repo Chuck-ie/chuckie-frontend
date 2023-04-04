@@ -20,7 +20,7 @@ function stopGame(): void {
 }
 
 function startGame(): void {
-    
+
     if (gamestate.getIsRunning) { return; }
 
     gamestate.setIsRunning(true);
@@ -44,92 +44,96 @@ defineExpose({ stopGame });
 </script>
 
 <template>
-    <div class="settingsMenu">
-        <form>
-            <ul>
-                <p>Select Algorithm:</p>
-                <li v-for="(o, _, i) in algorithms">
-                    <input name="algorithms" :id="o.value.toString()" type="radio" :value="o.value" v-model="form.algorithm" :checked="i == 0 ? true : false"/>
-                    <label name="algorithms" :for="o.value.toString()">{{
-                        o.name
-                    }}</label>
-                </li>
-            </ul>
+    <form class="settingsMenu flexRow" @submit.prevent>
 
-            <ul>
-                <p>Select Speed:</p>
-                <li>
-                    <input name="algospeed" id="1" type="radio" :value="SettingsSpeed.DEFAULT" v-model="form.speed" checked/>
-                    <label for="1">1.0 X</label>
-                </li>
-                <li>
-                    <input name="algospeed" id="1" type="radio" :value="SettingsSpeed.HALF" v-model="form.speed"/>
-                    <label for="1">0.5 X</label>
-                </li>
-                <li>
-                    <input name="algospeed" id="1" type="radio" :value="SettingsSpeed.STEP_BY_STEP" v-model="form.speed"/>
-                    <label for="1">step-by-step</label>
-                </li>
-                <li>
-                    <input name="algospeed" id="1" type="radio" :value="SettingsSpeed.REAL_TIME" v-model="form.speed"/>
-                    <label for="1">Realtime</label>
-                </li>
+        <select class="flexItem" v-model="form.algorithm">
+            <option v-for="(o, _, i) in algorithms" :value="o.value" :key="i">
+                {{ o.name }}
+            </option>
+        </select>
 
-            </ul>
-        </form>
+        <select class="flexItem" v-model="form.speed">
+            <option :value="SettingsSpeed.DEFAULT">1.0 X</option>
+            <option :value="SettingsSpeed.HALF">0.5 X</option>
+            <option :value="SettingsSpeed.STEP_BY_STEP">Step-by-step</option>
+            <option :value="SettingsSpeed.REAL_TIME">Realtime</option>
+        </select>
 
-        <Timer ref="timer" />
-        <div class="buttonsGroup">
-            <div v-if="gamestate.getActiveForm.speed === SettingsSpeed.STEP_BY_STEP && gamestate.getIsRunning" class="menuButton" @click="$emit('next')">Next Step</div>
-            <div v-else class="menuButton" @click="startGame()">Start</div>
-            <!--<div class="menuButton" @click="timer.stopTimer()">Stop</div>-->
-            <div class="menuButton" @click="resetGame()">Reset</div>
-        </div>
-    </div>
+        <Timer class="flexItem" ref="timer"/> 
+
+        <button
+            v-if="gamestate.getActiveForm.speed === SettingsSpeed.STEP_BY_STEP && gamestate.getIsRunning"
+            type="submit"
+            class="flexItem"
+            @click="$emit('next')">
+            Next Step
+        </button>
+            
+        <button 
+            v-else
+            type="submit" 
+            class="flexItem"
+            @click="startGame()">
+            Start
+        </button>
+
+        <button 
+            type="submit"
+            class="flexItem"
+            @click="resetGame()">
+            Reset
+        </button>
+        
+    </form>
 </template>
 
 <style scoped>
 
-.settingsMenu {
-    border: 1px solid;
-    width: 12%;
-    min-width: 150px;
-    padding: 5px;
+button {
+    all: unset;
 }
 
-.buttonsGroup {
-    display: inline-grid;
-    grid-template-columns: auto auto;
-    width: 100%;
-}
-
-.menuButton {
-    text-align: center;
-    border: 1px solid;
-    text-align: center;
-    padding-top: 3px;
-    padding-bottom: 1px;
-    user-select: none;
-}
-
-.menuButton:hover {
+button:hover {
     background-color: #000000;
     cursor: pointer;
 }
 
-ul {
-    list-style: none;
-    margin: 0;
-    padding-left: 5px;
+.settingsMenu {
+    border: 1px solid white;
+    width: calc(100% - 2px);
 }
 
-li {
-    padding-left: 10px;
+.flexRow {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
 }
 
-p {
-    margin-top: 10px;
-    margin-bottom: 0;
-    font-style: italic;
+.flexItem {
+    flex: 1;
+    background: none;
+    border-left: 1px solid white;
+    /*min-width: 130px;*/
+    font-family: inherit;
+    font-size: inherit;
+    margin-left: -1px;
+    padding-top: 5px; 
+    padding-bottom: 5px; 
+    text-align: center;
+    background-color: inherit;
 }
+
+select {
+    background-color: inherit;
+    cursor: pointer;
+}
+
+select option {
+    background-color: #615b5b;
+}
+
+select:focus {
+    outline: none;
+}
+
 </style>

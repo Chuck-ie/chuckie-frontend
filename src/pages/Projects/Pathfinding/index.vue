@@ -11,9 +11,6 @@ const pathingfield = ref();
 </script>
 
 <template>
-    <Pathingfield 
-        ref="pathingfield" 
-        @finished="() => settingsMenu.stopGame()"/>
 
     <SettingsMenu 
         ref="settingsMenu" 
@@ -22,6 +19,9 @@ const pathingfield = ref();
         @reset="pathingfield.setGamesize()" 
         @next="Colorizer.increaseStepCounter()"/>
 
+    <Pathingfield 
+        ref="pathingfield" 
+        @finished="() => settingsMenu.stopGame()"/>
 
 </template>
 

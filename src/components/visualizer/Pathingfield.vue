@@ -20,10 +20,10 @@ function setGamesize(): void {
 
     gameGrid.value = []
     Colorizer.setIsRunning(false);
-    const availableWidth:number = window.innerWidth - Math.max(180, window.innerWidth * 0.15);
+    //const availableWidth:number = window.innerWidth - Math.max(180, window.innerWidth * 0.15);
     const availableHeight:number = window.innerHeight * 0.8;
     
-    const columns:number = Math.floor(availableWidth/40);
+    const columns:number = Math.floor(window.innerWidth/40);
     const rows:number = Math.floor(availableHeight/40);
 
     gridWidth.value = columns * 40 + 'px';
@@ -133,8 +133,6 @@ async function startVisualizer(): Promise<void> {
     const start:Cell = getStartCell(gameGrid.value)!;
     let goal:Cell;
     let visited:Cell[];
-    
-    const t0 = performance.now();
 
     switch(gamestate.getActiveForm.algorithm) {
         case PathingAlgorithms.DIJKSTRA.value:
@@ -145,8 +143,6 @@ async function startVisualizer(): Promise<void> {
             [visited, goal] = aStar(gameGrid.value, start);
             break;
     }
-
-    const t1 = performance.now();
 
     new Colorizer(gameGrid.value, gamestate.getActiveForm.speed);
 
@@ -162,9 +158,12 @@ defineExpose({startVisualizer, setGamesize });
 </script>
 <template>
 
-    <table class="gamefield" :style="{width: gridWidth, height: gridHeight}" ondragstart="return false">
+    <table class="gamefield" ondragstart="return false">
         <tr v-for="row in gameGrid">
-            <td v-for="cell in row" @mousedown="startDragging(cell)" @mouseover="applyDragging(cell)" @click="toggleCell(cell)"
+            <td v-for="cell in row" 
+                @mousedown="startDragging(cell)" 
+                @mouseover="applyDragging(cell)" 
+                @click="toggleCell(cell)"
                 :class="[cell.animation, {
                     'start': cell.isStart,
                     'goal': cell.isGoal,
@@ -178,12 +177,12 @@ defineExpose({startVisualizer, setGamesize });
 <style scoped>
 
 .gamefield {
-    position: fixed;
-    width: 83%;
+    position: relative;
+    width: 100%;
+    margin-right: 5px;
     border-spacing: 0;
-    height: 80%;
-    left: max(180px, 15%);
-    top: 62px;
+    /*height: 80%;*/
+    margin-top: -1px;
 }
 
 td:last-child {
@@ -195,6 +194,7 @@ tr:last-child td {
 }
 
 td {
+    aspect-ratio: 1;
     width: 40px;
     height: 40px;
     padding: 0;

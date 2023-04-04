@@ -34,14 +34,5 @@ defineExpose({ startTimer, stopTimer, resetTimer });
 </script>
 
 <template>
-    <div>
-        <p>Timer: {{ formattedTime }}</p>
-    </div>
+    <div>Timer: {{ formattedTime }}</div>
 </template>
-
-<style scoped>
-p {
-    margin-top: 10px;
-    margin-bottom: 5px;
-}
-</style>
