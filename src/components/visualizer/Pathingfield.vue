@@ -19,6 +19,7 @@ const gamestate = visualizerStore();
 function setGamesize(): void {
 
     gameGrid.value = []
+    Colorizer.setIsRunning(false);
     const availableWidth:number = window.innerWidth - Math.max(180, window.innerWidth * 0.15);
     const availableHeight:number = window.innerHeight * 0.8;
     
@@ -108,7 +109,6 @@ async function startVisualizer(): Promise<void> {
     let visited:Cell[];
     
     const t0 = performance.now();
-    console.log(gamestate.getActiveForm);
 
     switch(gamestate.getActiveForm.algorithm) {
         case PathingAlgorithms.DIJKSTRA.value:

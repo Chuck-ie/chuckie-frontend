@@ -6,6 +6,7 @@ export class Colorizer {
     static colorizerSpeed:number;
     static delay:number = 20;
     static stepCounter:number = 0;
+    static isRunning:boolean = false;
 
     constructor(gameGrid:Cell[][], speed:number) {
         Colorizer.gameGrid = gameGrid;
@@ -15,6 +16,10 @@ export class Colorizer {
     public static increaseStepCounter(): void {
         Colorizer.stepCounter++;
     }
+
+    public static setIsRunning(isRunning:boolean): void {
+        Colorizer.isRunning = isRunning;
+    }
     
     public static async colorizeVisited(visited:Cell[]): Promise<void> {
         
@@ -23,7 +28,11 @@ export class Colorizer {
                 reject("gameGrid is undefined");
             }
 
+            this.isRunning = true;
+
             for (var i = 0; i < visited.length; i++) {
+                
+                if (!this.isRunning) { return; }
 
                 if (this.colorizerSpeed === SettingsSpeed.REAL_TIME) {
                     this.#colorizeCell(visited[i], "VISITED_REALTIME", false);
@@ -48,7 +57,11 @@ export class Colorizer {
                 reject("gameGrid is undefined");
             }
 
+            this.isRunning = true;
+
             while (currN.predecessor !== undefined && !currN.predecessor.isStart) {
+
+                if (!this.isRunning) { return; }
 
                 if (this.colorizerSpeed === SettingsSpeed.REAL_TIME) {
                     this.#colorizeCell(currN.predecessor, "PATH_REALTIME", false);
@@ -83,6 +96,8 @@ export class Colorizer {
     static async #awaitUserInput(currStep:number): Promise<void> {
         return new Promise<void>((resolve) => {
                 setInterval(() => {
+
+                if (!this.isRunning) { return; }
             
                 if (currStep < Colorizer.stepCounter) {
                     resolve();
