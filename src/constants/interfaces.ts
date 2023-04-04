@@ -11,6 +11,9 @@ export interface Cell {
     isGoal: boolean,
     isObstacle: boolean,
     visited: boolean,
+    fcost: number,
+    gcost: number,
+    hcost: number,
     distance: number,
     predecessor: Cell | undefined
 }

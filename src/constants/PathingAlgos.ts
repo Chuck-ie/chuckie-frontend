@@ -1,17 +1,17 @@
 import { Cell } from "./interfaces";
 import { getNeighbours } from "./PathingHelpers";
 
-export function dijkstra(gameGrid:Cell[][], start:Cell): [Cell[], Cell] {
-    
-    let currN:Cell = start;
-    let neighbours:Cell[] = [...getNeighbours(gameGrid, currN)];
-    let visited:Cell[] = [];
+export function dijkstra(gameGrid: Cell[][], start: Cell): [Cell[], Cell] {
+
+    let currN: Cell = start;
+    let neighbours: Cell[] = [...getNeighbours(gameGrid, currN)];
+    let visited: Cell[] = [];
 
     while (neighbours.length > 0 && !currN.isGoal) {
 
-        let bestN:Cell;
+        let bestN: Cell;
         // remove current node
-        let i:number = neighbours.indexOf(currN);
+        let i: number = neighbours.indexOf(currN);
         if (i >= 0) neighbours.splice(i, 1);
 
         if (!currN.isStart) {
@@ -41,10 +41,10 @@ export function dijkstra(gameGrid:Cell[][], start:Cell): [Cell[], Cell] {
     return [visited, currN];
 }
 
-export function aStar(gameGrid:Cell[][], start:Cell): [Cell[], Cell] {
+export function aStar(gameGrid: Cell[][], start: Cell): [Cell[], Cell] {
 
-    let currN:Cell = start;
-    let visited:Cell[] = [];
+    let currN: Cell = start;
+    let visited: Cell[] = [];
 
     return [visited, currN];
 }

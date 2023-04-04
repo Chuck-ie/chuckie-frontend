@@ -28,6 +28,8 @@ function setGamesize(): void {
 
     gridWidth.value = cellWidth + 'px';
     gridHeight.value = cellWidth + 'px';
+    const row:number = Math.floor(rows / 2);
+    const col:number = Math.floor(columns / 3);
 
     for (var i = 0; i < rows; i++) {
         gameGrid.value.push([]);
@@ -43,6 +45,9 @@ function setGamesize(): void {
                 isGoal: false,
                 isObstacle: false,
                 visited: false,
+                fcost: 0,
+                gcost: 0,
+                hcost: Math.sqrt(Math.pow(i - row, 2) + Math.pow(j - col, 2)),
                 distance: Infinity,
                 predecessor: undefined
             }
@@ -50,8 +55,6 @@ function setGamesize(): void {
         }
     }
 
-    const row:number = Math.floor(rows / 2);
-    const col:number = Math.floor(columns / 3);
     gameGrid.value[row][col].isStart = true;
     gameGrid.value[row][col].distance = 0;
 
