@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Cell, PathingAlgos, SettingsForm } from "@/constants/interfaces";
+import { Cell, PathingAlgorithms } from "@/constants/interfaces";
 import { aStar, dijkstra } from '@/constants/PathingAlgos';
 import { getStartCell } from '@/constants/PathingHelpers';
 import { Colorizer } from '@/constants/Colorizer';
+import { visualizerStore } from '@/stores/visualizer';
 
 const emit = defineEmits(["finished"]);
 window.addEventListener("resize", () => setGamesize());
@@ -13,10 +14,10 @@ const mouseDown = ref<boolean>(false);
 const draggedElement = ref<Cell | undefined>();
 const gridWidth = ref<string>("");
 const gridHeight = ref<string>("");
+const gamestate = visualizerStore();
 
 function setGamesize(): void {
 
-    algoRunning = false;
     gameGrid.value = []
     const availableWidth:number = window.innerWidth - Math.max(180, window.innerWidth * 0.15);
     const availableHeight:number = window.innerHeight * 0.8;
@@ -32,10 +33,6 @@ function setGamesize(): void {
         for (var j = 0; j < columns; j++) {
 
             const cell:Cell = {
-                // animation: {
-                //     visited: false,
-                //     path: false
-                // },
                 animation: "",
                 pos: {
                     row: i,
@@ -62,7 +59,7 @@ function setGamesize(): void {
 
 function startDragging(cell:Cell) {
 
-    if (algoRunning) { return; }
+    if (gamestate.getIsRunning) { return; }
     mouseDown.value = true;
     draggedElement.value = cell;
 }
@@ -93,7 +90,7 @@ function applyDragging(cell:Cell) {
 
 function toggleCell(cell:Cell) {
 
-    if (algoRunning) { return; }
+    if (gamestate.getIsRunning) { return; }
 
     if (cell.isStart || cell.isGoal) {
         return;
@@ -104,45 +101,38 @@ function toggleCell(cell:Cell) {
     }
 }
 
-var algoRunning:boolean = false;
-var activeForm:SettingsForm = {} as SettingsForm;
-async function startVisualizer(form:SettingsForm): Promise<void> {
-    
-    if (algoRunning) return; 
+async function startVisualizer(): Promise<void> {
 
-    activeForm = form;
-    algoRunning = true;
     const start:Cell = getStartCell(gameGrid.value)!;
     let goal:Cell;
     let visited:Cell[];
     
     const t0 = performance.now();
+    console.log(gamestate.getActiveForm);
 
-    switch(form.algorithm) {
-        case PathingAlgos.DIJKSTRA:
+    switch(gamestate.getActiveForm.algorithm) {
+        case PathingAlgorithms.DIJKSTRA.value:
             [visited, goal] = dijkstra(gameGrid.value, start);
             break;
 
-        case PathingAlgos.ASTAR:
+        case PathingAlgorithms.ASTAR.value:
             [visited, goal] = aStar(gameGrid.value, start);
             break;
     }
 
     const t1 = performance.now();
-    console.log("dijkstra", t1 - t0);
+    console.log("dijkstra", t1 - t0)
 
-    new Colorizer(gameGrid.value, form.speed);
+    new Colorizer(gameGrid.value, gamestate.getActiveForm.speed);
     //const useTimeout:boolean = form.speed !== SettingsSpeed.REAL_TIME;
 
     await Colorizer.colorizeVisited(visited!);
     emit("finished");
     await Colorizer.colorizePath(goal!);
-    console.log("done");
-    algoRunning = false;
 }
 
 setGamesize();
-defineExpose({startVisualizer, setGamesize, algoRunning, activeForm});
+defineExpose({startVisualizer, setGamesize });
 
 </script>
 <template>

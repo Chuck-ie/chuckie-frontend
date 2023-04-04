@@ -2,38 +2,45 @@
 import Timer from "@/components/visualizer/Timer.vue";
 import { SettingsForm, SettingsSpeed } from "@/constants/interfaces";
 import { ref } from "vue";
+import { visualizerStore } from "@/stores/visualizer";
 
-const props = defineProps(["algorithms", "activeForm", "algoRunning"]);
+const props = defineProps(["algorithms"]);
 const emit = defineEmits(["start", "reset", "next"]);
-
+const gamestate = visualizerStore();
 const timer = ref();
 
+console.log(Object.keys(props.algorithms));
 const form = ref<SettingsForm>({
-    algorithm: props.algorithms[Object.keys(props.algorithms)[0]],
-    speed: 0
+    algorithm: props.algorithms[Object.keys(props.algorithms)[0]].value,
+    speed: SettingsSpeed.DEFAULT
 });
 
-// function stopGame(): void {
-//     timer.value.stopTimer();
-//     props.algoRunning.value = false;
-//     props.activeForm.value.algorithm = Object.keys(props.algorithms)[0];
-//     props.activeForm.value.speed = 0;
-// }
+function stopGame(): void {
+    timer.value.stopTimer();
+    gamestate.setIsRunning(false);
+}
 
 function startGame(): void {
     
-    if (props.activeForm.speed !== SettingsSpeed.STEP_BY_STEP) {
+    if (gamestate.getIsRunning) { return; }
+
+    gamestate.setIsRunning(true);
+    gamestate.setActiveForm(form.value);
+
+    if (gamestate.getActiveForm.speed !== SettingsSpeed.STEP_BY_STEP) {
         timer.value.startTimer();
     }
 
-    emit("start", props.activeForm.value);
+    emit("start");
 }
 
 function resetGame(): void {
     timer.value.resetTimer();
+    gamestate.setIsRunning(false);
     emit("reset");
 }
-//defineExpose({ stopGame });
+
+defineExpose({ stopGame });
 
 </script>
 
@@ -42,10 +49,10 @@ function resetGame(): void {
         <form>
             <ul>
                 <p>Select Algorithm:</p>
-                <li v-for="(v, k, i) in algorithms">
-                    <input name="algorithms" :id="v.toString()" type="radio" :value="v" v-model="form.algorithm" :checked="i == 0 ? true : false"/>
-                    <label name="algorithms" :for="v.toString()">{{
-                        k
+                <li v-for="(o, _, i) in algorithms">
+                    <input name="algorithms" :id="o.value.toString()" type="radio" :value="o.value" v-model="form.algorithm" :checked="i == 0 ? true : false"/>
+                    <label name="algorithms" :for="o.value.toString()">{{
+                        o.name
                     }}</label>
                 </li>
             </ul>
@@ -74,7 +81,7 @@ function resetGame(): void {
 
         <Timer ref="timer" />
         <div class="buttonsGroup">
-            <div v-if="activeForm.speed === SettingsSpeed.STEP_BY_STEP && algoRunning" class="menuButton" @click="$emit('next')">Next Step</div>
+            <div v-if="gamestate.getActiveForm.speed === SettingsSpeed.STEP_BY_STEP && gamestate.getIsRunning" class="menuButton" @click="$emit('next')">Next Step</div>
             <div v-else class="menuButton" @click="startGame()">Start</div>
             <!--<div class="menuButton" @click="timer.stopTimer()">Stop</div>-->
             <div class="menuButton" @click="resetGame()">Reset</div>

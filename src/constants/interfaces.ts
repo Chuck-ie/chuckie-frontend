@@ -5,11 +5,7 @@ interface ArrayPos {
 }
 
 export interface Cell {
-    // animation: {
-    //     visited: boolean,
-    //     path: boolean
-    // },
-    animation: string,
+    animation: Animations | "",
     pos: ArrayPos,
     isStart: boolean,
     isGoal: boolean,
@@ -24,11 +20,6 @@ export interface SettingsForm {
     speed: number
 }
 
-export interface ColorizerArgs {
-    param: Cell | Cell[],
-    callback: (param: Cell | Cell[]) => Promise<void>
-}
-
 export interface Neighbours {
     UP: {X:number, Y:number},
     DOWN: {X:number, Y:number},
@@ -40,18 +31,66 @@ export interface Neighbours {
     DOWN_RIGHT: {X:number, Y:number}
 }
 
-export enum PathingAlgos {
-    DIJKSTRA = "dijkstra",
-    ASTAR = "astar"
+export interface VisualizerState {
+    isRunning: boolean,
+    activeForm: SettingsForm
 }
 
-export enum SortingAlgos {
-    SELECTION_SORT = "selectionsort",
-    BUBBLE_SORT = "bubblesort",
-    INSERTION_SORT = "insertionsort",
-    MERGE_SORT = "mergesort",
-    QUICK_SORT = "quicksort",
-    HEAP_SORT = "heapsort",
+interface Algorithm {
+    name: string,
+    value: string
+}
+
+interface PathingAlgos {
+    DIJKSTRA: Algorithm,
+    ASTAR: Algorithm,
+}
+
+interface SortingAlgos {
+    SELECTION_SORT: Algorithm,
+    BUBBLE_SORT: Algorithm,
+    INSERTION_SORT: Algorithm,
+    MERGE_SORT: Algorithm,
+    QUICK_SORT: Algorithm,
+    HEAP_SORT: Algorithm
+}
+
+export const PathingAlgorithms: PathingAlgos = {
+    DIJKSTRA: {
+        name: "Dijkstra",
+        value: "dijkstra"
+    },
+    ASTAR: {
+        name: "A-Star (A*)",
+        value: "astar"
+    }
+}
+
+export const SortingAlgorithms: SortingAlgos = {
+    SELECTION_SORT: {
+        name: "Selection Sort",
+        value: "selectionSort"
+    },
+    BUBBLE_SORT: {
+        name: "Bubble Sort",
+        value: "bubbleSort"
+    },
+    INSERTION_SORT: {
+        name: "Insertion Sort",
+        value: "insertionSort"
+    },
+    MERGE_SORT: {
+        name: "Merge Sort",
+        value: "mergeSort"
+    },
+    QUICK_SORT: {
+        name: "Quick Sort",
+        value: "quickSort"
+    },
+    HEAP_SORT: {
+        name: "Heap Sort",
+        value: "heapSort"
+    }
 }
 
 export enum SettingsSpeed {
