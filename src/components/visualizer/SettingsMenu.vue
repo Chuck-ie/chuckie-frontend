@@ -9,7 +9,6 @@ const emit = defineEmits(["start", "reset", "next"]);
 const gamestate = visualizerStore();
 const timer = ref();
 
-console.log(Object.keys(props.algorithms));
 const form = ref<SettingsForm>({
     algorithm: props.algorithms[Object.keys(props.algorithms)[0]].value,
     speed: SettingsSpeed.DEFAULT

@@ -28,11 +28,9 @@ export class Colorizer {
                 reject("gameGrid is undefined");
             }
 
-            this.isRunning = true;
-
             for (var i = 0; i < visited.length; i++) {
                 
-                if (!this.isRunning) { return; }
+                if (!this.isRunning) { break; }
 
                 if (this.colorizerSpeed === SettingsSpeed.REAL_TIME) {
                     this.#colorizeCell(visited[i], "VISITED_REALTIME", false);
@@ -57,11 +55,9 @@ export class Colorizer {
                 reject("gameGrid is undefined");
             }
 
-            this.isRunning = true;
-
             while (currN.predecessor !== undefined && !currN.predecessor.isStart) {
-
-                if (!this.isRunning) { return; }
+                
+                if (!this.isRunning) { break; }
 
                 if (this.colorizerSpeed === SettingsSpeed.REAL_TIME) {
                     this.#colorizeCell(currN.predecessor, "PATH_REALTIME", false);

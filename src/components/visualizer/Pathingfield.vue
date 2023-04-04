@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Cell, PathingAlgorithms } from "@/constants/interfaces";
+import { Cell, PathingAlgorithms, SettingsSpeed } from "@/constants/interfaces";
 import { aStar, dijkstra } from '@/constants/PathingAlgos';
 import { getStartCell } from '@/constants/PathingHelpers';
 import { Colorizer } from '@/constants/Colorizer';
@@ -58,6 +58,18 @@ function setGamesize(): void {
     gameGrid.value[row][2 * col].isGoal = true;
 }
 
+function softresetGamegrid(): void {
+    
+    for (var i = 0; i < gameGrid.value.length; i++) {
+        for (var j = 0; j < gameGrid.value[i].length; j++) {
+            gameGrid.value[i][j].animation = "";
+            gameGrid.value[i][j].visited = false;
+            gameGrid.value[i][j].distance = gameGrid.value[i][j].isStart ? 0 : Infinity;
+            gameGrid.value[i][j].predecessor = undefined;
+        }
+    }
+}
+
 function startDragging(cell:Cell) {
 
     if (gamestate.getIsRunning) { return; }
@@ -70,22 +82,36 @@ function applyDragging(cell:Cell) {
     if (!mouseDown.value) { return; }
 
     if (draggedElement.value!.isStart) {
-        draggedElement.value!.isStart = false;
-        draggedElement.value!.distance = Infinity;
-        cell.isStart = true;
-        cell.distance = 0;
-        draggedElement.value! = cell;
+        if (!cell.isObstacle && !cell.isGoal) {
+            draggedElement.value!.isStart = false;
+            draggedElement.value!.distance = Infinity;
+            cell.isStart = true;
+            cell.distance = 0;
+            draggedElement.value! = cell;
+        }
 
-    } else if (draggedElement.value!.isGoal) {
-        draggedElement.value!.isGoal = false;
-        cell.isGoal = true;
-        draggedElement.value! = cell;
+        if (gamestate.getActiveForm.speed === SettingsSpeed.REAL_TIME) {
+            softresetGamegrid();
+            startVisualizer();
+        }
+        return;
+    }
 
-    } else if (!cell.isStart && !cell.isGoal && cell.isObstacle) {
-        cell.isObstacle = false;
+    if (draggedElement.value!.isGoal) {
 
-    } else if (!cell.isStart && !cell.isGoal) {
-        cell.isObstacle = true;
+        if (!cell.isObstacle && !cell.isStart) {
+            draggedElement.value!.isGoal = false;
+            cell.isGoal = true;
+            draggedElement.value! = cell;
+        }
+        return;
+    }
+
+    if (!draggedElement.value!.isStart && !draggedElement.value!.isGoal) {
+
+        if (!cell.isStart && !cell.isGoal) {
+            cell.isObstacle = !cell.isObstacle;
+        }
     }
 }
 
@@ -121,11 +147,10 @@ async function startVisualizer(): Promise<void> {
     }
 
     const t1 = performance.now();
-    console.log("dijkstra", t1 - t0)
 
     new Colorizer(gameGrid.value, gamestate.getActiveForm.speed);
-    //const useTimeout:boolean = form.speed !== SettingsSpeed.REAL_TIME;
 
+    Colorizer.setIsRunning(true);
     await Colorizer.colorizeVisited(visited!);
     emit("finished");
     await Colorizer.colorizePath(goal!);
