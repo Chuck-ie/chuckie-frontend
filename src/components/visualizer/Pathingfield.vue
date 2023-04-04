@@ -20,14 +20,14 @@ function setGamesize(): void {
 
     gameGrid.value = []
     Colorizer.setIsRunning(false);
-    //const availableWidth:number = window.innerWidth - Math.max(180, window.innerWidth * 0.15);
     const availableHeight:number = window.innerHeight * 0.8;
+    const cellWidth:number = (window.innerWidth / 5) / 8;
     
-    const columns:number = Math.floor(window.innerWidth/40);
-    const rows:number = Math.floor(availableHeight/40);
+    const columns:number = Math.floor(window.innerWidth / cellWidth);
+    const rows:number = Math.floor(availableHeight / cellWidth);
 
-    gridWidth.value = columns * 40 + 'px';
-    gridHeight.value = rows * 40 + 'px';
+    gridWidth.value = cellWidth + 'px';
+    gridHeight.value = cellWidth + 'px';
 
     for (var i = 0; i < rows; i++) {
         gameGrid.value.push([]);
@@ -168,7 +168,8 @@ defineExpose({startVisualizer, setGamesize });
                     'start': cell.isStart,
                     'goal': cell.isGoal,
                     'obstacle': cell.isObstacle,
-                }]">
+                }]"
+                :style="{ width: gridWidth, height: gridHeight }">
             </td>
         </tr>       
     </table>
@@ -181,7 +182,6 @@ defineExpose({startVisualizer, setGamesize });
     width: 100%;
     margin-right: 5px;
     border-spacing: 0;
-    /*height: 80%;*/
     margin-top: -1px;
 }
 
@@ -194,9 +194,6 @@ tr:last-child td {
 }
 
 td {
-    aspect-ratio: 1;
-    width: 40px;
-    height: 40px;
     padding: 0;
     margin: 0; 
     border: 1px solid white;
