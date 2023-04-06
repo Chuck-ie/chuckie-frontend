@@ -77,6 +77,7 @@ export class Colorizer {
 
         return new Promise<void>((resolve) => {
             if (useTimeout) {
+
                 setTimeout(() => {
                     this.#colorizeCell(cell, animation, false);
                     resolve();

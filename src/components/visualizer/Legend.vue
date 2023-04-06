@@ -25,11 +25,12 @@ import CellDescription from './pathing/CellDescription.vue';
     width: calc(100% - 12px);
     height: 100%;        
     background-color: grey;
-    border: 1px solid white;
+    border: 1px solid var(--border-color);
     margin-top: -1px;
     padding-top: 5px;
     padding-left: 5px;
     padding-right: 5px;
+    background-color: var(--header-color)
 }
 
 .cellDescriptions {

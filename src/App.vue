@@ -11,7 +11,7 @@ import Navbar from "@/components/Navbar.vue";
 @import url("@/assets/colors.css");
 
 body {
-    background-color: #615b5b;
+    background-color: var(--background-color);
 }
 
 * {

@@ -1,8 +1,13 @@
 
 :root {
-    --start-color: #2ecc71;
-    --goal-color: #e74c3c;
-    --visited-color: #0074D9;
-    --obstacle-color: #333333;
-    --path-color: #ffdc00
+    --start-color: #00bfff;
+    --goal-color: #ff4040;
+    --visited-color: #ffb800;
+    --obstacle-color: #4d4d4d;
+    --header-color: #6E7CA0;
+    --path-color: #00c957;
+    --background-color: #2d2f4e;
+    --text-color: #ececec;
+    --cell-color: #3B3E5F;
+    --border-color: #575a82;
 }

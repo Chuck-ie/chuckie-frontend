@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Cell, PathingAlgorithms, SettingsSpeed } from "@/constants/interfaces";
+import { Animations, Cell, PathingAlgorithms, SettingsSpeed } from "@/constants/interfaces";
 import { aStar, dijkstra } from '@/constants/PathingAlgos';
 import { getStartCell } from '@/constants/PathingHelpers';
 import { Colorizer } from '@/constants/Colorizer';
@@ -34,6 +34,7 @@ function setGamesize(): void {
     for (var i = 0; i < rows; i++) {
         gameGrid.value.push([]);
         for (var j = 0; j < columns; j++) {
+
 
             const cell:Cell = {
                 animation: "",
@@ -84,29 +85,23 @@ function applyDragging(cell:Cell) {
     
     if (!mouseDown.value) { return; }
 
-    if (draggedElement.value!.isStart) {
-        if (!cell.isObstacle && !cell.isGoal) {
-            draggedElement.value!.isStart = false;
-            draggedElement.value!.distance = Infinity;
-            cell.isStart = true;
-            cell.distance = 0;
-            draggedElement.value! = cell;
-        }
-
-        if (gamestate.getActiveForm.speed === SettingsSpeed.REAL_TIME) {
-            softresetGamegrid();
-            startVisualizer();
-        }
-        return;
+    if (draggedElement.value!.isStart && !cell.isStart && !cell.isObstacle) {
+        draggedElement.value!.isStart = false;
+        draggedElement.value!.distance = Infinity;
+        cell.isStart = true;
+        cell.distance = 0;
+        draggedElement.value! = cell;
     }
 
-    if (draggedElement.value!.isGoal) {
+    if (draggedElement.value!.isGoal && !cell.isStart && !cell.isObstacle) {
+        draggedElement.value!.isGoal = false;
+        cell.isGoal = true;
+        draggedElement.value! = cell;
+    }
 
-        if (!cell.isObstacle && !cell.isStart) {
-            draggedElement.value!.isGoal = false;
-            cell.isGoal = true;
-            draggedElement.value! = cell;
-        }
+    if (gamestate.getActiveForm.speed === SettingsSpeed.REAL_TIME) {
+        softresetGamegrid();
+        startVisualizer();
         return;
     }
 
@@ -188,21 +183,25 @@ defineExpose({startVisualizer, setGamesize });
     margin-top: -1px;
 }
 
+table {
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
 td:last-child {
-    border-right: 1px solid white;
+    border-right: 1px solid var(--border-color);
 }
 
 tr:last-child td {
-    border-bottom: 1px solid white;
+    border-bottom: 1px solid var(--border-color);
 }
 
 td {
     padding: 0;
     margin: 0; 
-    border: 1px solid white;
-    border-right: 0;
-    border-bottom: 0;
-    background-color: grey;
+    border: 1px solid var(--border-color);
+    background-repeat: no-repeat;
+    background-size: 0% 0%;
 }
 
 .start {
@@ -217,6 +216,19 @@ td {
     background-color: var(--obstacle-color);
 }
 
+.visited {
+    background-position: 50% 50%;
+    background-image: linear-gradient(var(--visited-color), var(--visited-color));
+    /*animation: fillForward 0.5s forwards;*/
+}
+
+.path {
+    background-position: 50% 50%;
+    background-color: var(--path-color);
+    background-image: linear-gradient(var(--visited-color), var(--visited-color));
+    /*animation: fillBackward 0.5s forwards;*/
+}
+
 .visitedColor {
     background-color: var(--visited-color);
 }
@@ -225,28 +237,33 @@ td {
     background-color: var(--path-color);
 }
 
-@keyframes visitedAnimation {
-    from {background-color: grey;}
-    to {background-color: var(--visited-color);}
+@keyframes fillForward {
+    0% {
+        background-size: 0% 0%;
+    }
+    100% {
+        background-size: 100% 100%;
+    }
 }
 
-.visited {
-    animation-name: visitedAnimation;
-    animation-delay: 0s;
-    animation-duration: 1s;
-    animation-fill-mode: forwards;
+@keyframes fillBackward {
+    0% {
+        background-size: 100% 100%;
+    }
+    100% {
+        background-size: 0% 0%;
+    }
 }
-
-@keyframes pathAnimation {
-    from {background-color: var(--visited-color);}
-    to {background-color: var(--path-color);}
-}
-
-.path {
-    animation-name: pathAnimation;
-    animation-delay: 0s;
-    animation-duration: 1s;
-    animation-fill-mode: forwards;
-}
+/* @keyframes pathAnimation { */
+/*     from {background-color: var(--visited-color);} */
+/*     to {background-color: var(--path-color);} */
+/* } */
+/**/
+/* .path { */
+/*     animation-name: pathAnimation; */
+/*     animation-delay: 0s; */
+/*     animation-duration: 1s; */
+/*     animation-fill-mode: forwards; */
+/* } */
 
 </style>

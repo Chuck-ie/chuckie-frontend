@@ -99,8 +99,9 @@ button:hover {
 }
 
 .settingsMenu {
-    border: 1px solid white;
+    border: 1px solid var(--border-color);
     width: calc(100% - 2px);
+    background-color: var(--header-color);
 }
 
 .flexRow {
@@ -112,7 +113,7 @@ button:hover {
 .flexItem {
     flex: 1;
     background: none;
-    border-left: 1px solid white;
+    border-left: 1px solid var(--border-color);
     font-family: inherit;
     font-size: inherit;
     margin-left: -1px;

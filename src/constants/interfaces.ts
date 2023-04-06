@@ -107,5 +107,5 @@ export enum Animations {
     VISITED_DELAYED = "visited",
     VISITED_REALTIME = "visitedColor",
     PATH_DELAYED = "path",
-    PATH_REALTIME = "pathColor",
+    PATH_REALTIME = "pathColor"
 }

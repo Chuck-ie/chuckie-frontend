@@ -11,8 +11,11 @@
 <style scoped>
 
 ul {
-    border: 1px solid;
+    border: 1px solid var(--border-color);
+    background-color: var(--header-color);
     padding: 5px;
+    margin-top: 0;
+    margin-bottom: 10px;
 }
 
 li {
