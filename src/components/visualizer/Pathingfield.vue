@@ -81,8 +81,8 @@ function startDragging(cell:Cell) {
     draggedElement.value = cell;
 }
 
-function applyDragging(cell:Cell) {
-    
+function applyDragging(evt:any, cell:Cell) {
+
     if (!mouseDown.value) { return; }
 
     if (draggedElement.value!.isStart && !cell.isStart && !cell.isObstacle) {
@@ -105,21 +105,32 @@ function applyDragging(cell:Cell) {
         return;
     }
 
-    if (!draggedElement.value!.isStart && !draggedElement.value!.isGoal) {
+    if (draggedElement.value!.isStart || draggedElement.value!.isGoal) {
+        return;
+    }
 
-        if (!cell.isStart && !cell.isGoal) {
-            cell.isObstacle = !cell.isObstacle;
-        }
+    if (cell.isStart || cell.isGoal) {
+        return;
+    }
+
+    if (evt.altKey) {
+        cell.isObstacle = false;
+    } else {
+        cell.isObstacle = true;
     }
 }
 
 function toggleCell(cell:Cell) {
 
-    if (gamestate.getIsRunning) { return; }
+    if (gamestate.getIsRunning) { 
+        return; 
+    }
 
     if (cell.isStart || cell.isGoal) {
         return;
-    } else if (cell.isObstacle) {
+    }
+
+    if (cell.isObstacle) {
         cell.isObstacle = false;   
     } else {
         cell.isObstacle = true;
@@ -148,6 +159,7 @@ async function startVisualizer(): Promise<void> {
     await Colorizer.colorizeVisited(visited!);
     emit("finished");
     await Colorizer.colorizePath(goal!);
+    Colorizer.setIsRunning(false);
 }
 
 setGamesize();
@@ -160,7 +172,7 @@ defineExpose({startVisualizer, setGamesize });
         <tr v-for="row in gameGrid">
             <td v-for="cell in row" 
                 @mousedown="startDragging(cell)" 
-                @mouseover="applyDragging(cell)" 
+                @mouseover="applyDragging($event, cell)" 
                 @click="toggleCell(cell)"
                 :class="[cell.animation, {
                     'start': cell.isStart,
@@ -219,14 +231,14 @@ td {
 .visited {
     background-position: 50% 50%;
     background-image: linear-gradient(var(--visited-color), var(--visited-color));
-    /*animation: fillForward 0.5s forwards;*/
+    animation: fillForward 0.5s forwards;
 }
 
 .path {
     background-position: 50% 50%;
     background-color: var(--path-color);
     background-image: linear-gradient(var(--visited-color), var(--visited-color));
-    /*animation: fillBackward 0.5s forwards;*/
+    animation: fillBackward 0.5s forwards;
 }
 
 .visitedColor {
