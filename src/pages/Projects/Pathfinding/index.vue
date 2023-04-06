@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import SettingsMenu from "@/components/visualizer/SettingsMenu.vue";
 import Pathingfield from "@/components/visualizer/Pathingfield.vue";
+import Legend from "@/components/visualizer/Legend.vue";
 import { ref } from "vue";
 import { Colorizer } from "@/constants/Colorizer";
 import { PathingAlgorithms } from "@/constants/interfaces";
@@ -22,6 +23,8 @@ const pathingfield = ref();
     <Pathingfield 
         ref="pathingfield" 
         @finished="() => settingsMenu.stopGame()"/>
+
+    <Legend/>
 
 </template>
 

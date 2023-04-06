@@ -113,7 +113,6 @@ button:hover {
     flex: 1;
     background: none;
     border-left: 1px solid white;
-    /*min-width: 130px;*/
     font-family: inherit;
     font-size: inherit;
     margin-left: -1px;

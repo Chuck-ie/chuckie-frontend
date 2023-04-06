@@ -8,6 +8,8 @@ import Navbar from "@/components/Navbar.vue";
 </template>
 
 <style>
+@import url("@/assets/colors.css");
+
 body {
     background-color: #615b5b;
 }

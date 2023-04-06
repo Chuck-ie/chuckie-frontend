@@ -1,0 +1,8 @@
+
+:root {
+    --start-color: #2ecc71;
+    --goal-color: #e74c3c;
+    --visited-color: #0074D9;
+    --obstacle-color: #333333;
+    --path-color: #ffdc00
+}

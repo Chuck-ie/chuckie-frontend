@@ -20,7 +20,7 @@ function setGamesize(): void {
 
     gameGrid.value = []
     Colorizer.setIsRunning(false);
-    const availableHeight:number = window.innerHeight * 0.8;
+    const availableHeight:number = window.innerHeight * 0.75;
     const cellWidth:number = (window.innerWidth / 5) / 8;
     
     const columns:number = Math.floor(window.innerWidth / cellWidth);
@@ -206,28 +206,28 @@ td {
 }
 
 .start {
-    background-color: green;
+    background-color: var(--start-color);
 }
 
 .goal {
-    background-color: red;
+    background-color: var(--goal-color);
 }
 
 .obstacle {
-    background-color: black;
+    background-color: var(--obstacle-color);
 }
 
 .visitedColor {
-    background-color: #085792;
+    background-color: var(--visited-color);
 }
 
 .pathColor {
-    background-color: #ffedbb;
+    background-color: var(--path-color);
 }
 
 @keyframes visitedAnimation {
     from {background-color: grey;}
-    to {background-color: #085792;}
+    to {background-color: var(--visited-color);}
 }
 
 .visited {
@@ -238,8 +238,8 @@ td {
 }
 
 @keyframes pathAnimation {
-    from {background-color: #085792;}
-    to {background-color: #ffedbb;}
+    from {background-color: var(--visited-color);}
+    to {background-color: var(--path-color);}
 }
 
 .path {
