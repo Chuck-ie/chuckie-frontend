@@ -5,6 +5,7 @@ import { aStar, dijkstra } from '@/constants/PathingAlgos';
 import { getStartCell } from '@/constants/PathingHelpers';
 import { Colorizer } from '@/constants/Colorizer';
 import { visualizerStore } from '@/stores/visualizer';
+import { DistanceCalculator } from '@/constants/DistanceCalculator';
 
 const emit = defineEmits(["finished"]);
 window.addEventListener("resize", () => setGamesize());
@@ -35,7 +36,6 @@ function setGamesize(): void {
         gameGrid.value.push([]);
         for (var j = 0; j < columns; j++) {
 
-
             const cell:Cell = {
                 animation: "",
                 pos: {
@@ -46,9 +46,6 @@ function setGamesize(): void {
                 isGoal: false,
                 isObstacle: false,
                 visited: false,
-                fcost: 0,
-                gcost: 0,
-                hcost: Math.sqrt(Math.pow(i - row, 2) + Math.pow(j - col, 2)),
                 distance: Infinity,
                 predecessor: undefined
             }
@@ -99,7 +96,7 @@ function applyDragging(evt:any, cell:Cell) {
         draggedElement.value! = cell;
     }
 
-    if (gamestate.getActiveForm.speed === SettingsSpeed.REAL_TIME) {
+    if (gamestate.getActiveForm.speed === SettingsSpeed.REAL_TIME && (draggedElement.value!.isStart || draggedElement.value!.isGoal)) {
         softresetGamegrid();
         startVisualizer();
         return;
@@ -171,6 +168,7 @@ defineExpose({startVisualizer, setGamesize });
     <table class="gamefield" ondragstart="return false">
         <tr v-for="row in gameGrid">
             <td v-for="cell in row" 
+                :id="`${cell.pos.row}-${cell.pos.col}`"
                 @mousedown="startDragging(cell)" 
                 @mouseover="applyDragging($event, cell)" 
                 @click="toggleCell(cell)"

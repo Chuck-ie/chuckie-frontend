@@ -58,3 +58,18 @@ export function getStartCell(gameGrid:Cell[][]): Cell {
     return startCell;
 }
 
+export function getGoalCell(gameGrid:Cell[][]): Cell {
+
+    let goalCell = {} as Cell;
+
+    for (var i = 0; i < gameGrid.length; i++) {
+        for (var j = 0; j < gameGrid[i].length; j++) {
+            if (gameGrid[i][j].isGoal) {
+                goalCell = gameGrid[i][j];
+                return goalCell;
+            }
+        }
+    }
+
+    return goalCell;
+}
