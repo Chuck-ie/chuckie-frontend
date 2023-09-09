@@ -41,7 +41,6 @@ export function getNeighbours(gameGrid:Cell[][], cell:Cell): Cell[] {
     return neighbours;
 }
 
-
 export function getStartCell(gameGrid:Cell[][]): Cell {
 
     let startCell = {} as Cell;

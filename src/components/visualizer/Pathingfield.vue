@@ -183,6 +183,7 @@ defineExpose({startVisualizer, setGamesize });
     </table>
 
 </template>
+
 <style scoped>
 
 .gamefield {
