@@ -36,17 +36,17 @@ export interface VisualizerState {
     activeForm: SettingsForm
 }
 
-interface Algorithm {
+export interface Algorithm {
     name: string,
     value: string
 }
 
-interface PathingAlgos {
+export interface PathingAlgos {
     DIJKSTRA: Algorithm,
     ASTAR: Algorithm,
 }
 
-interface SortingAlgos {
+export interface SortingAlgos {
     SELECTION_SORT: Algorithm,
     BUBBLE_SORT: Algorithm,
     INSERTION_SORT: Algorithm,
